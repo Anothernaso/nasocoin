@@ -1,14 +1,17 @@
 package com.anatnaso.nasocoin.server.database.account
 
 import com.anatnaso.nasocoin.server.database.Database
+import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
 import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException
 import com.anatnaso.nasocoin.server.database.exception.HandleConsumedException
+import com.anatnaso.nasocoin.server.database.wallet.Wallet
+import com.anatnaso.nasocoin.server.database.wallet.WalletHandle
+import com.anatnaso.nasocoin.server.database.wallet.exception.NoSuchWalletException
 import org.apache.commons.codec.digest.DigestUtils
 
 class UserAccountHandle (
     private val account: UserAccount,
-    private val database: Database,
-    private val access: Database.DatabaseDirectAccess
+    private val access: Database.DatabaseDirectAccess,
 ) {
     private var isConsumed = false
 
@@ -55,6 +58,11 @@ class UserAccountHandle (
 
             access.walletsByOwnerIdentifier[account.userIdentifier] = wallets
             access.accounts[account.userIdentifier] = account
+        }
+
+        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+        wallets.forEach { wallet ->
+            wallet.ownerUserIdentifier = account.userIdentifier
         }
     }
 
@@ -110,5 +118,81 @@ class UserAccountHandle (
         )
 
         return account.password
+    }
+
+    @Throws(HandleConsumedException::class, NoSuchWalletException::class)
+    fun getWalletByPublicToken(publicToken: String): WalletHandle {
+        return getWallet(publicToken, false)
+    }
+
+    @Throws(HandleConsumedException::class, NoSuchWalletException::class)
+    fun getWalletByPrivateToken(privateToken: String): WalletHandle {
+        return getWallet(privateToken, true)
+    }
+
+    @Throws(HandleConsumedException::class, NoSuchWalletException::class)
+    private fun getWallet(token: String, isPrivate: Boolean): WalletHandle {
+        if (isConsumed) throw HandleConsumedException (
+            "Could not get wallet '$token' (${if (!isPrivate) "pub" else "prt"}) of user account '${account.username}': Handle already consumed"
+        )
+
+        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+
+        var wallet: Wallet? = null
+        wallets.forEach { it ->
+            if (!isPrivate) {
+                if (it.publicToken == token) wallet = it
+            } else {
+                if (it.privateToken == token) wallet = it
+            }
+        }
+
+        wallet?:
+            throw NoSuchWalletException("Could not get wallet '$token' (${if (!isPrivate) "pub" else "prt"}) of user account '${account.username}': No such wallet")
+
+        return WalletHandle(wallet, account, access)
+    }
+
+    @Throws(HandleConsumedException::class)
+    fun getWallets(): MutableSet<WalletHandle> {
+        if (isConsumed) throw HandleConsumedException (
+            "Could not get wallets of user account '${account.username}': Handle already consumed"
+        )
+
+        val handles = mutableSetOf<WalletHandle>()
+
+        access.walletsByOwnerIdentifier[account.userIdentifier]!!.forEach { wallet ->
+            handles.add(WalletHandle(wallet, account, access))
+        }
+
+        return handles;
+    }
+
+    @Throws(HandleConsumedException::class)
+    fun hasWalletByPublicToken(publicToken: String): Boolean {
+        return hasWallet(publicToken, false)
+    }
+
+    @Throws(HandleConsumedException::class)
+    fun hasWalletByPrivateToken(privateToken: String): Boolean {
+        return hasWallet(privateToken, true)
+    }
+
+    @Throws(HandleConsumedException::class)
+    private fun hasWallet(token: String, isPrivate: Boolean): Boolean {
+        if (isConsumed) throw HandleConsumedException (
+            "Could not check if '$token' (${if (!isPrivate) "pub" else "prt"}) is a wallet of user account '${account.username}': Handle already consumed"
+        )
+
+        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+        wallets.forEach { wallet ->
+            if (!isPrivate) {
+                if (wallet.publicToken == token) return true
+            } else {
+                if (wallet.privateToken == token) return true
+            }
+        }
+
+        return false
     }
 }

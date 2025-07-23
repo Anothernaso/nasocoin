@@ -29,11 +29,11 @@ data class Database (
         }
 
         val account = UserAccount(displayName, username, password)
-        access.accounts.put(account.userIdentifier, account)
+        access.accounts[account.userIdentifier] = account
 
-        access.walletsByOwnerIdentifier.put(account.userIdentifier, ConcurrentHashMap.newKeySet())
+        access.walletsByOwnerIdentifier[account.userIdentifier] = ConcurrentHashMap.newKeySet()
 
-        return UserAccountHandle(account, this, access)
+        return UserAccountHandle(account, access)
     }
 
     @Throws(NoSuchUserException::class)
@@ -41,7 +41,7 @@ data class Database (
         val account = access.accounts[userIdentifier]
             ?: throw NoSuchUserException("Could not get user account '$userIdentifier': No such user")
 
-        return UserAccountHandle(account, this, access)
+        return UserAccountHandle(account, access)
     }
 
     @Throws(NoSuchUserException::class)

@@ -8,7 +8,7 @@ import java.util.*
 data class Wallet private constructor (
     val publicToken: String,
     val privateToken: String,
-    val ownerUserIdentifier: String,
+    var ownerUserIdentifier: String,
     val walletFunds: BigInteger,
 ) : Serializable {
     companion object {

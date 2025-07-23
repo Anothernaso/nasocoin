@@ -36,7 +36,7 @@ class WalletHandle (
         isConsumed = true
     }
 
-    @Throws(HandleConsumedException::class, NoSuchUserException::class)
+    @Throws(HandleConsumedException::class, NoSuchUserException::class, Exception::class)
     fun transferOwnershipByIdentifier(userIdentifier: String): WalletHandle {
         if (isConsumed) throw HandleConsumedException(
             "Could not transfer ownership of wallet '${wallet.publicToken}' (pub): Handle already consumed"
@@ -54,18 +54,21 @@ class WalletHandle (
         isConsumed = true
 
         synchronized(access) {
-
-            oldOwnerWallets.remove(wallet)
-            newOwnerWallets.add(wallet)
-
-            wallet.ownerUserIdentifier = newOwner.userIdentifier
-
+            try {
+                oldOwnerWallets.remove(wallet)
+                newOwnerWallets.add(wallet)
+                wallet.ownerUserIdentifier = newOwner.userIdentifier
+            } catch (e: Exception) {
+                // rollback or reset
+                isConsumed = false
+                throw e
+            }
         }
 
         return WalletHandle(wallet, newOwner, access)
     }
 
-    @Throws(HandleConsumedException::class, NoSuchUserException::class)
+    @Throws(HandleConsumedException::class, NoSuchUserException::class, Exception::class)
     fun transferOwnershipByUsername(username: String): WalletHandle {
         try {
             return transferOwnershipByIdentifier(DigestUtils.sha256Hex(username))

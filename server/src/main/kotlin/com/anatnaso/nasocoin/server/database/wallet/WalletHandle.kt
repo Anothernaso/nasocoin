@@ -42,24 +42,27 @@ class WalletHandle (
             "Could not transfer ownership of wallet '${wallet.publicToken}' (pub): Handle already consumed"
         )
 
+        val newOwner = access.accounts.get(userIdentifier)
+            ?: throw NoSuchUserException("Could not transfer ownership of wallet '${wallet.publicToken}' (pub): No such user '$userIdentifier'")
+
+        val newOwnerWallets = access.walletsByOwnerIdentifier[newOwner.userIdentifier]
+            ?: throw IllegalStateException("Missing wallet set for user ${newOwner.username}")
+
+        val oldOwnerWallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+            ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
+        isConsumed = true
+
         synchronized(access) {
-            val newOwner = access.accounts.get(userIdentifier)
-                ?: throw NoSuchUserException("Could not transfer ownership of wallet '${wallet.publicToken}' (pub): No such user '$userIdentifier'")
-
-            val newOwnerWallets = access.walletsByOwnerIdentifier[newOwner.userIdentifier]
-                ?: throw IllegalStateException("Missing wallet set for user ${newOwner.username}")
-
-            val oldOwnerWallets = access.walletsByOwnerIdentifier[account.userIdentifier]
-                ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
 
             oldOwnerWallets.remove(wallet)
             newOwnerWallets.add(wallet)
 
             wallet.ownerUserIdentifier = newOwner.userIdentifier
 
-            isConsumed = true
-            return WalletHandle(wallet, newOwner, access)
         }
+
+        return WalletHandle(wallet, newOwner, access)
     }
 
     @Throws(HandleConsumedException::class, NoSuchUserException::class)

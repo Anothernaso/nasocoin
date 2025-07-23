@@ -48,10 +48,12 @@ class UserAccountHandle (
                         "'${account.username}' to '$username': Username occupied"
             )
 
-        synchronized(access.accounts) {
+        synchronized(access) {
             access.accounts.remove(account.userIdentifier)
 
-            val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+            val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+                ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
             access.walletsByOwnerIdentifier.remove(account.userIdentifier)
 
             account.username = username // This will automatically generate a new user identifier
@@ -136,7 +138,8 @@ class UserAccountHandle (
             "Could not get wallet '$token' (${if (!isPrivate) "pub" else "prt"}) of user account '${account.username}': Handle already consumed"
         )
 
-        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+            ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
 
         var wallet: Wallet? = null
         wallets.forEach { it ->
@@ -147,8 +150,8 @@ class UserAccountHandle (
             }
         }
 
-        wallet?:
-            throw NoSuchWalletException("Could not get wallet '$token' (${if (!isPrivate) "pub" else "prt"}) of user account '${account.username}': No such wallet")
+        wallet
+            ?: throw NoSuchWalletException("Could not get wallet '$token' (${if (!isPrivate) "pub" else "prt"}) of user account '${account.username}': No such wallet")
 
         return WalletHandle(wallet, account, access)
     }
@@ -161,7 +164,10 @@ class UserAccountHandle (
 
         val handles = mutableSetOf<WalletHandle>()
 
-        access.walletsByOwnerIdentifier[account.userIdentifier]!!.forEach { wallet ->
+        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+            ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
+        wallets.forEach { wallet ->
             handles.add(WalletHandle(wallet, account, access))
         }
 
@@ -184,7 +190,9 @@ class UserAccountHandle (
             "Could not check if '$token' (${if (!isPrivate) "pub" else "prt"}) is a wallet of user account '${account.username}': Handle already consumed"
         )
 
-        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+        val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+            ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
         wallets.forEach { wallet ->
             if (!isPrivate) {
                 if (wallet.publicToken == token) return true

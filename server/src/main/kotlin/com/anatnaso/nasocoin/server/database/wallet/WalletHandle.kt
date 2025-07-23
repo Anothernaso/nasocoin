@@ -51,15 +51,16 @@ class WalletHandle (
         val oldOwnerWallets = access.walletsByOwnerIdentifier[account.userIdentifier]
             ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
 
-        isConsumed = true
-
         synchronized(access) {
             try {
                 oldOwnerWallets.remove(wallet)
                 newOwnerWallets.add(wallet)
+
                 wallet.ownerUserIdentifier = newOwner.userIdentifier
+
+                isConsumed = true
             } catch (e: Exception) {
-                // rollback or reset
+                // Rollback or reset
                 isConsumed = false
                 throw e
             }

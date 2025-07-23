@@ -1,0 +1,99 @@
+package com.anatnaso.nasocoin.server.database
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
+import java.io.*
+import java.nio.file.Files
+import java.nio.file.Paths
+import kotlin.concurrent.thread
+
+object DatabaseManager {
+    const val DATABASE_PERSISTENT_PATH = "./appdata/db.ser"
+
+    private var databaseField: Database = Database()
+    val database: Database
+        get() = databaseField
+
+    private var hasInitialized = false
+
+    private val logger = LoggerFactory.getLogger(DatabaseManager::class.java)
+    private val scope = CoroutineScope(Dispatchers.Default)
+
+    fun saveDatabase() {
+        logger.info("Database save started")
+        val startTime = System.currentTimeMillis()
+
+        val databasePath = Paths.get(DATABASE_PERSISTENT_PATH)
+
+        if (!Files.exists(databasePath.parent)) {
+            Files.createDirectories(databasePath.parent)
+        }
+
+        ObjectOutputStream(FileOutputStream(databasePath.toFile())).use { oos ->
+            try {
+                oos.writeObject(database)
+            } catch (e: NotSerializableException) {
+                logger.error("Could not serialize database: Database contains an object that is not serializable", e)
+            } catch (e: IOException) {
+                logger.error("Could not write serialized database", e)
+            }
+        }
+
+        val finishTime = System.currentTimeMillis()
+        logger.info("Database save finished in ${finishTime - startTime}ms")
+    }
+
+    fun loadDatabase() {
+        logger.info("Database load started")
+        val startTime = System.currentTimeMillis()
+
+        val databasePath = Paths.get(DATABASE_PERSISTENT_PATH)
+
+        if (!Files.exists(databasePath)) {
+            saveDatabase()
+            return
+        }
+
+        ObjectInputStream(FileInputStream(databasePath.toFile())).use { ois ->
+            try {
+                databaseField = ois.readObject() as Database
+            } catch (e: ClassNotFoundException) {
+                logger.error("Could not deserialize database", e)
+            } catch (e: IOException) {
+                logger.error("Could not read database", e)
+            }
+        }
+
+        val finishTime = System.currentTimeMillis()
+        logger.info("Database load finished in ${finishTime - startTime}ms")
+    }
+
+    fun initialize() {
+        if (hasInitialized) return
+
+        Runtime.getRuntime().addShutdownHook(thread(start = false) {
+            saveDatabase()
+        })
+
+        scope.launch {
+            val delayTime = 60 * 60 * 1000L // 1-hour delay
+
+            delay(delayTime)
+
+            while (isActive) {
+
+                saveDatabase()
+
+                delay(delayTime)
+            }
+        }
+
+        hasInitialized = true
+
+        loadDatabase()
+    }
+}

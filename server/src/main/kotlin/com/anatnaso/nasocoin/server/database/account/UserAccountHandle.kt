@@ -20,7 +20,12 @@ class UserAccountHandle (
             "Could not delete user account '${account.username}': Handle already consumed"
         )
 
-        // TODO: Delete any associated wallets
+        val wallets = access.walletsByOwnerIdentifier.get(account.userIdentifier)!!
+        wallets.forEach { wallet ->
+            access.walletsByPublicToken.remove(wallet.publicToken)
+            access.walletsByPrivateToken.remove(wallet.privateToken)
+        }
+        wallets.clear()
 
         access.accounts.remove(account.userIdentifier)
 
@@ -42,12 +47,14 @@ class UserAccountHandle (
 
         synchronized(access.accounts) {
             access.accounts.remove(account.userIdentifier)
+
+            val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
+            access.walletsByOwnerIdentifier.remove(account.userIdentifier)
+
             account.username = username // This will automatically generate a new user identifier
 
-            // TODO: Relink wallet keys to the new user identifier
-            //       that was automatically generated when changing the username
-
-            access.accounts.put(account.userIdentifier, account)
+            access.walletsByOwnerIdentifier[account.userIdentifier] = wallets
+            access.accounts[account.userIdentifier] = account
         }
     }
 

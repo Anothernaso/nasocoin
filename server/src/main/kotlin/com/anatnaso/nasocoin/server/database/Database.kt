@@ -29,7 +29,9 @@ data class Database (
         }
 
         val account = UserAccount(displayName, username, password)
-        access.accounts.put(userIdentifier, account)
+        access.accounts.put(account.userIdentifier, account)
+
+        access.walletsByOwnerIdentifier.put(account.userIdentifier, ConcurrentHashMap.newKeySet())
 
         return UserAccountHandle(account, this, access)
     }
@@ -61,6 +63,8 @@ data class Database (
 
     data class DatabaseDirectAccess (
         val accounts: ConcurrentHashMap<String, UserAccount> = ConcurrentHashMap<String, UserAccount>(),
-        val wallets: ConcurrentHashMap<String, Wallet> = ConcurrentHashMap<String, Wallet>(),
+        val walletsByPublicToken: ConcurrentHashMap<String, Wallet> = ConcurrentHashMap<String, Wallet>(),
+        val walletsByPrivateToken: ConcurrentHashMap<String, Wallet> = ConcurrentHashMap<String, Wallet>(),
+        val walletsByOwnerIdentifier: ConcurrentHashMap<String, MutableSet<Wallet>> = ConcurrentHashMap<String, MutableSet<Wallet>>(),
     ) : Serializable
 }

@@ -8,15 +8,17 @@ import java.util.*
 data class Wallet private constructor (
     val publicToken: String,
     val privateToken: String,
-    val walletFunds: BigInteger
+    val ownerUserIdentifier: String,
+    val walletFunds: BigInteger,
 ) : Serializable {
     companion object {
         private val serialVersionUID: Long = 1L
     }
 
-    constructor() : this (
+    constructor(ownerUserIdentifier: String) : this (
         UUID.randomUUID().toString(),
         UUID.randomUUID().toString(),
+        ownerUserIdentifier,
         BigInteger("0"),
     )
 }

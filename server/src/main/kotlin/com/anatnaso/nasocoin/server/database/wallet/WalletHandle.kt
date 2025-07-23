@@ -2,14 +2,74 @@ package com.anatnaso.nasocoin.server.database.wallet
 
 import com.anatnaso.nasocoin.server.database.Database
 import com.anatnaso.nasocoin.server.database.account.UserAccount
-import java.io.Serializable
+import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
+import com.anatnaso.nasocoin.server.database.exception.HandleConsumedException
+import org.apache.commons.codec.digest.DigestUtils
+import java.math.BigInteger
+import kotlin.jvm.Throws
 
 class WalletHandle (
     private val wallet: Wallet,
-    private val ownerAccount: UserAccount,
+    private val account: UserAccount,
     private val access: Database.DatabaseDirectAccess
 ) {
     private var isConsumed = false
 
     fun isConsumed(): Boolean = isConsumed
+
+    @Throws(HandleConsumedException::class)
+    fun deleteWallet() {
+        if (isConsumed) throw HandleConsumedException(
+            "Could not delete wallet '${wallet.publicToken}' (pub): Handle already consumed"
+        )
+
+        synchronized(access) {
+            access.walletsByPublicToken.remove(wallet.publicToken)
+            access.walletsByPrivateToken.remove(wallet.privateToken)
+
+            val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+                ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
+            wallets.remove(wallet)
+        }
+
+        isConsumed = true
+    }
+
+    @Throws(HandleConsumedException::class, NoSuchUserException::class)
+    fun transferOwnershipByIdentifier(userIdentifier: String): WalletHandle {
+        if (isConsumed) throw HandleConsumedException(
+            "Could not transfer ownership of wallet '${wallet.publicToken}' (pub): Handle already consumed"
+        )
+
+        synchronized(access) {
+            val newOwner = access.accounts.get(userIdentifier)
+                ?: throw NoSuchUserException("Could not transfer ownership of wallet '${wallet.publicToken}' (pub): No such user '$userIdentifier'")
+
+            val newOwnerWallets = access.walletsByOwnerIdentifier[newOwner.userIdentifier]
+                ?: throw IllegalStateException("Missing wallet set for user ${newOwner.username}")
+
+            val oldOwnerWallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+                ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
+            oldOwnerWallets.remove(wallet)
+            newOwnerWallets.add(wallet)
+
+            wallet.ownerUserIdentifier = newOwner.userIdentifier
+
+            isConsumed = true
+            return WalletHandle(wallet, newOwner, access)
+        }
+    }
+
+    @Throws(HandleConsumedException::class, NoSuchUserException::class)
+    fun transferOwnershipByUsername(username: String): WalletHandle {
+        try {
+            return transferOwnershipByIdentifier(DigestUtils.sha256Hex(username))
+        } catch (e: NoSuchUserException) {
+            throw NoSuchUserException("Could not transfer ownership of wallet '${wallet.publicToken}' (pub): No such user '$username'", e)
+        }
+    }
+
+    fun getWalletFunds(): BigInteger = wallet.walletFunds
 }

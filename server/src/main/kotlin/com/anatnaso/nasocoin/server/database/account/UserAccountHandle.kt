@@ -1,7 +1,6 @@
 package com.anatnaso.nasocoin.server.database.account
 
 import com.anatnaso.nasocoin.server.database.Database
-import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
 import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException
 import com.anatnaso.nasocoin.server.database.exception.HandleConsumedException
 import com.anatnaso.nasocoin.server.database.wallet.Wallet
@@ -23,14 +22,17 @@ class UserAccountHandle (
             "Could not delete user account '${account.username}': Handle already consumed"
         )
 
-        val wallets = access.walletsByOwnerIdentifier.get(account.userIdentifier)!!
-        wallets.forEach { wallet ->
-            access.walletsByPublicToken.remove(wallet.publicToken)
-            access.walletsByPrivateToken.remove(wallet.privateToken)
-        }
-        wallets.clear()
+        synchronized(access) {
+            val wallets = access.walletsByOwnerIdentifier.get(account.userIdentifier)!!
+            wallets.forEach { wallet ->
+                access.walletsByPublicToken.remove(wallet.publicToken)
+                access.walletsByPrivateToken.remove(wallet.privateToken)
+            }
+            wallets.clear()
 
-        access.accounts.remove(account.userIdentifier)
+            access.walletsByOwnerIdentifier.remove(account.userIdentifier)
+            access.accounts.remove(account.userIdentifier)
+        }
 
         isConsumed = true
     }

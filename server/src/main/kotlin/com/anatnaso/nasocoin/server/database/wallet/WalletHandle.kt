@@ -78,5 +78,8 @@ class WalletHandle (
         }
     }
 
+    fun getPublicToken(): String = wallet.publicToken
+    fun getPrivateToken(): String = wallet.privateToken
+    fun getOwnerIdentifier(): String = wallet.ownerUserIdentifier
     fun getWalletFunds(): BigInteger = wallet.walletFunds
 }

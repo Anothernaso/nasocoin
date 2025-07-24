@@ -7,10 +7,10 @@ import io.javalin.Javalin
 
 fun Javalin.registerNasoCoinEndpoints(): Javalin {
 
-    post("/api/createAccount") { ctx -> CreateAccountEndpoint::createAccountRequestHandler }
+    post("/api/createAccount", CreateAccountEndpoint::createAccountRequestHandler)
 
-    post("/api/getAccountWallets") { ctx -> GetAccountWalletsEndpoint::getAccountWalletsRequestHandler }
-    get("/api/getAccountUserIdentifier") { ctx -> GetAccountUserIdentifierEndpoint::getAccountUserIdentifierRequestHandler }
+    post("/api/getAccountWallets", GetAccountWalletsEndpoint::getAccountWalletsRequestHandler)
+    get("/api/getAccountUserIdentifier", GetAccountUserIdentifierEndpoint::getAccountUserIdentifierRequestHandler)
 
     return this
 }

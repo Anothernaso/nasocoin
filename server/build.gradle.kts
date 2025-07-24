@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":shared"))
     implementation("io.javalin:javalin:6.7.0")
     implementation("ch.qos.logback:logback-classic:1.5.18")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 }
 
 application {

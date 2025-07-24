@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint
+package com.anatnaso.nasocoin.server.endpoint.account
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
@@ -12,12 +12,12 @@ import java.io.Serializable
 object GetAccountUserIdentifierEndpoint {
     private data class ResponsePayload(@Expose val userIdentifier: String) : Serializable
 
-    fun getAccountUserIdentifierEndpointHandler(ctx: Context) {
+    fun getAccountUserIdentifierRequestHandler(ctx: Context) {
 
         val username = ctx.queryParam("username")
         if (username == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
-                .json(ErrorPayload("Could not get user identifier of unknown user account: Missing required query parameter 'username'"))
+                .json(ErrorPayload("Could not get user identifier of unknown user account", "Missing required query parameter 'username'"))
             return
         }
 
@@ -30,7 +30,7 @@ object GetAccountUserIdentifierEndpoint {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json (
-                    ErrorPayload("Could not get user identifier of user account '${username}': No such user")
+                    ErrorPayload("Could not get user identifier of user account '${username}'", "No such user")
                 )
             return
         }

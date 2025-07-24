@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.misc
+package com.anatnaso.nasocoin.shared.misc
 
 import com.google.gson.GsonBuilder
 

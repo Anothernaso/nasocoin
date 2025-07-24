@@ -1,6 +1,6 @@
 package com.anatnaso.nasocoin.server.config
 
-import com.anatnaso.nasocoin.server.misc.Globals
+import com.anatnaso.nasocoin.shared.misc.Globals
 import com.google.gson.JsonSyntaxException
 import org.slf4j.LoggerFactory
 import java.io.IOException

@@ -1,16 +1,16 @@
 package com.anatnaso.nasocoin.server
 
-import com.anatnaso.nasocoin.server.endpoint.GetAccountUserIdentifierEndpoint
-import com.anatnaso.nasocoin.server.endpoint.GetAccountWalletsEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.CreateAccountEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.GetAccountUserIdentifierEndpoint
+import com.anatnaso.nasocoin.server.endpoint.wallet.GetAccountWalletsEndpoint
 import io.javalin.Javalin
-import org.slf4j.LoggerFactory
-
-private val logger = LoggerFactory.getLogger(object {}.javaClass.enclosingClass)
 
 fun Javalin.registerNasoCoinEndpoints(): Javalin {
 
-    post("/api/getAccountWallets") { ctx -> GetAccountWalletsEndpoint::getAccountWalletsEndpointHandler }
-    get("/api/getAccountUserIdentifier") { ctx -> GetAccountUserIdentifierEndpoint::getAccountUserIdentifierEndpointHandler }
+    post("/api/createAccount") { ctx -> CreateAccountEndpoint::createAccountRequestHandler }
+
+    post("/api/getAccountWallets") { ctx -> GetAccountWalletsEndpoint::getAccountWalletsRequestHandler }
+    get("/api/getAccountUserIdentifier") { ctx -> GetAccountUserIdentifierEndpoint::getAccountUserIdentifierRequestHandler }
 
     return this
 }

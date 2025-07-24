@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint
+package com.anatnaso.nasocoin.server.endpoint.wallet
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
@@ -14,12 +14,12 @@ object GetAccountWalletsEndpoint {
     private data class RequestPayload(@Expose val password: String) : Serializable
     private data class ResponsePayload(@Expose val wallets: ArrayList<String>) : Serializable
 
-    fun getAccountWalletsEndpointHandler(ctx: Context) {
+    fun getAccountWalletsRequestHandler(ctx: Context) {
 
         val userIdentifier = ctx.queryParam("userIdentifier")
         if (userIdentifier == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
-                .json(ErrorPayload("Could not get wallets of unknown user: Missing required query parameter 'userIdentifier'"))
+                .json(ErrorPayload("Could not get wallets of unknown user", "Missing required query parameter 'userIdentifier'"))
             return
         }
 
@@ -32,7 +32,7 @@ object GetAccountWalletsEndpoint {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json (
-                    ErrorPayload("Could not get wallets of user account '${userIdentifier}': No such user")
+                    ErrorPayload("Could not get wallets of user account '${userIdentifier}'", "No such user")
                 )
             return
         }
@@ -43,7 +43,7 @@ object GetAccountWalletsEndpoint {
             ctx
                 .status(HttpStatus.UNAUTHORIZED)
                 .json(
-                    ErrorPayload("Could not get wallets of user account '${userIdentifier}': Invalid password")
+                    ErrorPayload("Could not get wallets of user account '${userIdentifier}'", "Invalid password")
                 )
             return
         }

@@ -21,6 +21,7 @@ subprojects {
         add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         add("implementation", "org.slf4j:slf4j-simple:2.0.17")
         add("implementation", "commons-codec:commons-codec:1.18.0")
+        add("implementation", "com.google.code.gson:gson:2.13.1")
     }
 }
 

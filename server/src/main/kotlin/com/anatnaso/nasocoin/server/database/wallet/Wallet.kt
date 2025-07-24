@@ -12,7 +12,7 @@ data class Wallet private constructor (
     val walletFunds: BigInteger,
 ) : Serializable {
     companion object {
-        private val serialVersionUID: Long = 2L
+        private const val serialVersionUID: Long = 2L
     }
 
     constructor(ownerUserIdentifier: String) : this (

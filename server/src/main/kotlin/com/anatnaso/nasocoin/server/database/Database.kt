@@ -14,7 +14,7 @@ data class Database (
 ) : Serializable {
 
     companion object {
-        private val serialVersionUID: Long = 2L
+        private const val serialVersionUID: Long = 2L
     }
 
     @Throws(UsernameOccupiedException::class)

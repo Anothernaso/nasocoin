@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/nasocoin.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/client/nasocoin.client.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/nasocoin.server.iml" filepath="$PROJECT_DIR$/.idea/modules/server/nasocoin.server.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/nasocoin.server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/server/nasocoin.server.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared/nasocoin.shared.main.iml" filepath="$PROJECT_DIR$/.idea/modules/shared/nasocoin.shared.main.iml" />
     </modules>

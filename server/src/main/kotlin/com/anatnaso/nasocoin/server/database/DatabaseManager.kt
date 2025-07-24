@@ -1,5 +1,6 @@
 package com.anatnaso.nasocoin.server.database
 
+import com.anatnaso.nasocoin.server.config.ConfigurationManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,7 +13,6 @@ import java.nio.file.Paths
 import kotlin.concurrent.thread
 
 object DatabaseManager {
-    const val DATABASE_PERSISTENT_PATH = "./appdata/db.ser"
 
     private var databaseField: Database = Database()
     val database: Database
@@ -27,7 +27,7 @@ object DatabaseManager {
         logger.info("Database save started")
         val startTime = System.currentTimeMillis()
 
-        val databasePath = Paths.get(DATABASE_PERSISTENT_PATH)
+        val databasePath = Paths.get(ConfigurationManager.configuration.databasePath)
 
         if (!Files.exists(databasePath.parent)) {
             Files.createDirectories(databasePath.parent)
@@ -51,9 +51,10 @@ object DatabaseManager {
         logger.info("Database load started")
         val startTime = System.currentTimeMillis()
 
-        val databasePath = Paths.get(DATABASE_PERSISTENT_PATH)
+        val databasePath = Paths.get(ConfigurationManager.configuration.databasePath)
 
         if (!Files.exists(databasePath)) {
+            logger.warn("Database not found, creating it...")
             saveDatabase()
             return
         }
@@ -63,8 +64,10 @@ object DatabaseManager {
                 databaseField = ois.readObject() as Database
             } catch (e: ClassNotFoundException) {
                 logger.error("Could not deserialize database", e)
+                return
             } catch (e: IOException) {
                 logger.error("Could not read database", e)
+                return
             }
         }
 

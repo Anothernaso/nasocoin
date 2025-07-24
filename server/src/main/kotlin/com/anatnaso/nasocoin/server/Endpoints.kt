@@ -1,23 +1,16 @@
 package com.anatnaso.nasocoin.server
 
+import com.anatnaso.nasocoin.server.endpoint.GetAccountUserIdentifierEndpoint
+import com.anatnaso.nasocoin.server.endpoint.GetAccountWalletsEndpoint
 import io.javalin.Javalin
-import io.javalin.http.HttpStatus
 import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger(object {}.javaClass.enclosingClass)
 
-fun registerEndpoints(app: Javalin): Javalin {
+fun Javalin.registerNasoCoinEndpoints(): Javalin {
 
-    app.get("/{name}") { ctx ->
-        logger.info("Incoming request at '${ctx.path()}'")
+    post("/api/getAccountWallets") { ctx -> GetAccountWalletsEndpoint::getAccountWalletsEndpointHandler }
+    get("/api/getAccountUserIdentifier") { ctx -> GetAccountUserIdentifierEndpoint::getAccountUserIdentifierEndpointHandler }
 
-        val name = ctx.queryParam("name")
-        if (name == null) {
-            ctx.status(HttpStatus.BAD_REQUEST).result("Missing 'name' query parameter")
-            return@get
-        }
-
-        ctx.result("Hello, ${name}!")
-    }
-    return app
+    return this
 }

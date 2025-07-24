@@ -10,6 +10,8 @@ fun main() {
     DatabaseManager.initialize()
     DatabaseDummy.addDummyData()
 
-    registerEndpoints(Javalin.create())
+    Javalin.create()
+        .registerNasoCoinMiddleware()
+        .registerNasoCoinEndpoints()
         .start(ConfigurationManager.configuration.hostname, ConfigurationManager.configuration.port.toInt())
 }

@@ -6,8 +6,8 @@ import io.javalin.Javalin
 
 fun Javalin.registerNasoCoinMiddleware(): Javalin {
 
-    before { ctx -> BeforeRequestMiddleware::beforeRequestHandler }
-    after { ctx -> AfterRequestMiddleware::afterRequestHandler }
+    before(BeforeRequestMiddleware::beforeRequestHandler)
+    after(AfterRequestMiddleware::afterRequestHandler)
 
     return this
 }

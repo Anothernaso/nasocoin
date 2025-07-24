@@ -8,6 +8,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.io.*
+import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.concurrent.thread
@@ -98,5 +99,24 @@ object DatabaseManager {
         hasInitialized = true
 
         loadDatabase()
+        if (!database.accountExistsByUsername(ConfigurationManager.configuration.rootUsername)) {
+            database.registerAccount (
+                ConfigurationManager.configuration.rootDisplayName,
+                ConfigurationManager.configuration.rootUsername,
+                ConfigurationManager.configuration.rootPassword,
+            )
+        }
+
+        val rootAccount = database.getAccountByUsername (
+            ConfigurationManager.configuration.rootUsername
+        )
+
+        val rootWallets = rootAccount.getWallets()
+        if (rootWallets.isEmpty()) {
+            val rootWallet = rootAccount.createWallet()
+            rootWallet.getWalletFunds().add(
+                BigInteger(ConfigurationManager.configuration.rootDefaultCapital)
+            )
+        }
     }
 }

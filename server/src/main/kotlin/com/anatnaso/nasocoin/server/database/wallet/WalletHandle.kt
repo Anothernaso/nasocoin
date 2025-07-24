@@ -31,6 +31,8 @@ class WalletHandle (
                 ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
 
             wallets.remove(wallet)
+
+            // TODO: Refund wallet funds to root account
         }
 
         isConsumed = true

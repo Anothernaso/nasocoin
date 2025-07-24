@@ -32,6 +32,8 @@ class UserAccountHandle (
 
             access.walletsByOwnerIdentifier.remove(account.userIdentifier)
             access.accounts.remove(account.userIdentifier)
+
+            // TODO: Refund account capital to root account
         }
 
         isConsumed = true
@@ -122,6 +124,27 @@ class UserAccountHandle (
         )
 
         return account.password
+    }
+
+    @Throws(HandleConsumedException::class)
+    fun createWallet(): WalletHandle {
+        if (isConsumed) throw HandleConsumedException (
+            "Could not create wallet for user account '${account.username}': Handle already consumed"
+        )
+
+        val wallet = Wallet(account.userIdentifier)
+
+        synchronized(access) {
+            access.walletsByPublicToken[wallet.publicToken] = wallet
+            access.walletsByPrivateToken[wallet.privateToken] = wallet
+
+            val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]
+                ?: throw IllegalStateException("Missing wallet set for user ${account.username}")
+
+            wallets.add(wallet)
+        }
+
+        return WalletHandle(wallet, account, access)
     }
 
     @Throws(HandleConsumedException::class, NoSuchWalletException::class)

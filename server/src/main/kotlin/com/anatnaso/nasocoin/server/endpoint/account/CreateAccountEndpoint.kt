@@ -39,20 +39,11 @@ object CreateAccountEndpoint {
             return
         }
 
-        if (payload.displayName.isBlank()) {
-            ctx
-                .status(HttpStatus.BAD_REQUEST)
-                .json(
-                    ErrorPayload("Could not create user account '${payload.username}'", "Display name cannot be blank")
-                )
-            return
-        }
-
         if (payload.username.isBlank()) {
             ctx
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
-                    ErrorPayload("Could not create user account '${payload.username}'", "Username cannot be blank")
+                    ErrorPayload("Could not create user account", "Username cannot be blank")
                 )
             return
         }
@@ -66,16 +57,30 @@ object CreateAccountEndpoint {
             return
         }
 
+        if (payload.displayName.isBlank()) {
+            ctx
+                .status(HttpStatus.BAD_REQUEST)
+                .json(
+                    ErrorPayload("Could not create user account '${payload.username}'", "Display name cannot be blank")
+                )
+            return
+        }
+
         val trimmedDisplayName = payload.displayName.trim()
         val trimmedUsername = payload.username.trim()
         val trimmedPassword = payload.password.trim()
 
         val usernameErrors = UsernameValidator.validateUsername(trimmedUsername)
         if (!usernameErrors.isEmpty()) {
-            ErrorPayload (
-                "Could not create user account '$trimmedUsername', errors:\n${Globals.gson.toJson(usernameErrors)}",
-                "Usernames can only contain letters, digits, dashes and underscores"
-            )
+            ctx
+                .status(HttpStatus.BAD_REQUEST)
+                .json(
+                    ErrorPayload (
+                        "Could not create user account '$trimmedUsername', errors:\n${Globals.gson.toJson(usernameErrors)}",
+                        "Usernames can only contain letters, digits, dashes and underscores"
+                    )
+                )
+            return
         }
 
         val db = DatabaseManager.database

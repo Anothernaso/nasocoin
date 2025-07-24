@@ -30,7 +30,7 @@ object ConfigurationManager {
         }
 
         try {
-            configuration = Globals.gson.fromJson(configurationJson, Configuration::class.java)
+            configuration = Globals.gsonPretty.fromJson(configurationJson, Configuration::class.java)
         } catch (e: JsonSyntaxException) {
             logger.error("A fatal exception occurred: Could not parse config", e)
             exitProcess(1)
@@ -46,7 +46,7 @@ object ConfigurationManager {
             Files.createFile(configurationPath)
         }
 
-        val configurationJson = Globals.gson.toJson(configuration)
+        val configurationJson = Globals.gsonPretty.toJson(configuration)
 
         try {
             Files.writeString(configurationPath, configurationJson)

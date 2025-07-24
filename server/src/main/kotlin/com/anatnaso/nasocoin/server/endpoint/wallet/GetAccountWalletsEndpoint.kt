@@ -23,6 +23,18 @@ object GetAccountWalletsEndpoint {
             return
         }
 
+        val payload: RequestPayload
+        try {
+            payload = ctx.bodyAsClass<RequestPayload>()
+        } catch (_: Exception) {
+            ctx
+                .status(HttpStatus.BAD_REQUEST)
+                .json(
+                    ErrorPayload("Could not get wallets of user account $userIdentifier", "Could not parse request body")
+                )
+            return
+        }
+
         val db = DatabaseManager.database
 
         val account: UserAccountHandle
@@ -32,12 +44,10 @@ object GetAccountWalletsEndpoint {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json (
-                    ErrorPayload("Could not get wallets of user account '${userIdentifier}'", "No such user")
+                    ErrorPayload("Could not get wallets of user account '$userIdentifier'", "No such user")
                 )
             return
         }
-
-        val payload = ctx.bodyAsClass<RequestPayload>()
 
         if (account.getPassword() != payload.password) {
             ctx

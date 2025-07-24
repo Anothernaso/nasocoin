@@ -10,6 +10,7 @@ import io.javalin.http.Context
 import io.javalin.http.HttpStatus
 import io.javalin.http.bodyAsClass
 import java.io.Serializable
+import java.lang.Exception
 
 object CreateAccountEndpoint {
     private data class RequestPayload (
@@ -23,7 +24,20 @@ object CreateAccountEndpoint {
     ) : Serializable
 
     fun createAccountRequestHandler(ctx: Context) {
-        val payload = ctx.bodyAsClass<RequestPayload>()
+        val payload: RequestPayload
+        try {
+            payload = ctx.bodyAsClass<RequestPayload>()
+        } catch (_: Exception) {
+            ctx
+                .status(HttpStatus.BAD_REQUEST)
+                .json(
+                    ErrorPayload(
+                        "Could not create user account",
+                        "Could not parse request body"
+                    )
+                )
+            return
+        }
 
         if (payload.displayName.isBlank()) {
             ctx

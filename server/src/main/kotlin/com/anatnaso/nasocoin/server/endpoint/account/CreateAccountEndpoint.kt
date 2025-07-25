@@ -87,7 +87,7 @@ object CreateAccountEndpoint {
 
         val account: UserAccountHandle
         try {
-            account = db.registerAccount (
+            account = db!!.registerAccount (
                 trimmedDisplayName,
                 trimmedUsername,
                 trimmedPassword

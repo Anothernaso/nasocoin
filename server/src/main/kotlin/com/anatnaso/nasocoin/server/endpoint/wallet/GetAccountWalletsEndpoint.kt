@@ -39,7 +39,7 @@ object GetAccountWalletsEndpoint {
 
         val account: UserAccountHandle
         try {
-            account = db.getAccountById(userIdentifier)
+            account = db!!.getAccountById(userIdentifier)
         } catch (_: NoSuchUserException) {
             ctx
                 .status(HttpStatus.NOT_FOUND)

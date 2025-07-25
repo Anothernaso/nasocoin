@@ -25,7 +25,7 @@ object GetAccountUserIdentifierEndpoint {
 
         val account: UserAccountHandle
         try {
-            account = db.getAccountByUsername(username)
+            account = db!!.getAccountByUsername(username)
         } catch (_: NoSuchUserException) {
             ctx
                 .status(HttpStatus.NOT_FOUND)

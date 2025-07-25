@@ -1,6 +1,7 @@
 package com.anatnaso.nasocoin.server.database
 
 import com.anatnaso.nasocoin.server.config.ConfigurationManager
+import com.anatnaso.nasocoin.server.database.exception.DatabaseManagerNotInitializedException
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.*
@@ -10,19 +11,24 @@ import kotlin.concurrent.thread
 
 object DatabaseManager {
 
-    private var databaseField: Database?
-        get() = databaseField
-        set(value) { databaseField = value }
+    private var databaseField: Database? = null
 
-    val database: Database
-        get() = databaseField!!
+    val database: Database?
+        get() = databaseField
 
     private var hasInitialized = false
 
     private val logger = LoggerFactory.getLogger(DatabaseManager::class.java)
     private val scope = CoroutineScope(Dispatchers.Default)
 
+    @Throws(DatabaseManagerNotInitializedException::class)
     fun saveDatabase() {
+        if (!hasInitialized) {
+            throw DatabaseManagerNotInitializedException (
+                "Could not save database: Database manager not initialized"
+            )
+        }
+
         logger.info("Database save started")
         val startTime = System.currentTimeMillis()
 
@@ -46,7 +52,14 @@ object DatabaseManager {
         logger.info("Database save finished in ${finishTime - startTime}ms")
     }
 
+    @Throws(DatabaseManagerNotInitializedException::class)
     fun loadDatabase() {
+        if (!hasInitialized) {
+            throw DatabaseManagerNotInitializedException (
+                "Could not load database: Database manager not initialized"
+            )
+        }
+
         logger.info("Database load started")
         val startTime = System.currentTimeMillis()
 

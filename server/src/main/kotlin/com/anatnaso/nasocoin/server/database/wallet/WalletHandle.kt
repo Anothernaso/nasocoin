@@ -32,7 +32,10 @@ class WalletHandle (
 
             wallets.remove(wallet)
 
-            // TODO: Refund wallet funds to root account
+            val rootWallet = access.walletsByPublicToken[access.rootWalletPublicToken]
+                ?: throw IllegalStateException("Missing root wallet")
+
+            rootWallet.walletFunds.add(wallet.walletFunds)
         }
 
         isConsumed = true

@@ -23,17 +23,12 @@ class UserAccountHandle (
         )
 
         synchronized(access) {
-            val wallets = access.walletsByOwnerIdentifier.get(account.userIdentifier)!!
-            wallets.forEach { wallet ->
-                access.walletsByPublicToken.remove(wallet.publicToken)
-                access.walletsByPrivateToken.remove(wallet.privateToken)
+            getWallets().forEach { wallet ->
+                wallet.deleteWallet()
             }
-            wallets.clear()
 
             access.walletsByOwnerIdentifier.remove(account.userIdentifier)
             access.accounts.remove(account.userIdentifier)
-
-            // TODO: Refund account capital to root account
         }
 
         isConsumed = true

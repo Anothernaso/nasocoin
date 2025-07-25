@@ -1,23 +1,21 @@
 package com.anatnaso.nasocoin.server.database
 
 import com.anatnaso.nasocoin.server.config.ConfigurationManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.io.*
-import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.concurrent.thread
 
 object DatabaseManager {
 
-    private var databaseField: Database = Database()
-    val database: Database
+    private var databaseField: Database?
         get() = databaseField
+        set(value) { databaseField = value }
+
+    val database: Database
+        get() = databaseField!!
 
     private var hasInitialized = false
 
@@ -79,6 +77,13 @@ object DatabaseManager {
     fun initialize() {
         if (hasInitialized) return
 
+        databaseField = Database (
+            ConfigurationManager.configuration.rootDisplayName,
+            ConfigurationManager.configuration.rootUsername,
+            ConfigurationManager.configuration.rootPassword,
+            ConfigurationManager.configuration.rootDefaultCapital
+        )
+
         Runtime.getRuntime().addShutdownHook(thread(start = false) {
             saveDatabase()
         })
@@ -99,24 +104,5 @@ object DatabaseManager {
         hasInitialized = true
 
         loadDatabase()
-        if (!database.accountExistsByUsername(ConfigurationManager.configuration.rootUsername)) {
-            database.registerAccount (
-                ConfigurationManager.configuration.rootDisplayName,
-                ConfigurationManager.configuration.rootUsername,
-                ConfigurationManager.configuration.rootPassword,
-            )
-        }
-
-        val rootAccount = database.getAccountByUsername (
-            ConfigurationManager.configuration.rootUsername
-        )
-
-        val rootWallets = rootAccount.getWallets()
-        if (rootWallets.isEmpty()) {
-            val rootWallet = rootAccount.createWallet()
-            rootWallet.getWalletFunds().add(
-                BigInteger(ConfigurationManager.configuration.rootDefaultCapital)
-            )
-        }
     }
 }

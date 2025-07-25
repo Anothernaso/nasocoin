@@ -7,14 +7,32 @@ import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedE
 import com.anatnaso.nasocoin.server.database.wallet.Wallet
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.Serializable
+import java.math.BigInteger
 import java.util.concurrent.ConcurrentHashMap
 
-data class Database (
-    private val access: DatabaseDirectAccess = DatabaseDirectAccess()
-) : Serializable {
+class Database : Serializable {
 
     companion object {
         private const val serialVersionUID: Long = 2L
+    }
+
+    private val access: DatabaseDirectAccess = DatabaseDirectAccess()
+
+    constructor(rootDisplayName: String, rootUsername: String, rootPassword: String, rootCapital: String) {
+        val rootAccount = registerAccount (
+                rootDisplayName,
+                rootUsername,
+                rootPassword,
+            )
+
+
+        val rootWallet = rootAccount.createWallet()
+        rootWallet.getWalletFunds().add(
+            BigInteger(rootCapital)
+        )
+
+        access.rootUserIdentifier = rootAccount.getUserIdentifier()
+        access.rootWalletPublicToken = rootWallet.getPublicToken()
     }
 
     @Throws(UsernameOccupiedException::class)
@@ -54,7 +72,7 @@ data class Database (
     }
 
     fun accountExistsByIdentifier(userIdentifier: String): Boolean {
-        return access.accounts.containsKey(userIdentifier);
+        return access.accounts.containsKey(userIdentifier)
     }
 
     fun accountExistsByUsername(username: String): Boolean {
@@ -66,5 +84,8 @@ data class Database (
         val walletsByPublicToken: ConcurrentHashMap<String, Wallet> = ConcurrentHashMap<String, Wallet>(),
         val walletsByPrivateToken: ConcurrentHashMap<String, Wallet> = ConcurrentHashMap<String, Wallet>(),
         val walletsByOwnerIdentifier: ConcurrentHashMap<String, MutableSet<Wallet>> = ConcurrentHashMap<String, MutableSet<Wallet>>(),
+
+        var rootUserIdentifier: String = "",
+        var rootWalletPublicToken: String = "",
     ) : Serializable
 }

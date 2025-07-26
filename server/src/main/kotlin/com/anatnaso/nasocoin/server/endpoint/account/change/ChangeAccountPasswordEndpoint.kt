@@ -3,26 +3,22 @@ package com.anatnaso.nasocoin.server.endpoint.account.change
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
 import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
-import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException
 import com.anatnaso.nasocoin.shared.http.ErrorPayload
-import com.anatnaso.nasocoin.shared.misc.Globals
-import com.anatnaso.nasocoin.shared.misc.UsernameValidator
 import com.google.gson.annotations.Expose
 import io.javalin.http.Context
 import io.javalin.http.HttpStatus
 import io.javalin.http.bodyAsClass
 import java.io.Serializable
-import java.lang.Exception
 
-object ChangeAccountUsernameEndpoint {
+object ChangeAccountPasswordEndpoint {
     private data class RequestPayload (
         @Expose val userIdentifier: String,
         @Expose val password: String,
 
-        @Expose val newUsername: String
+        @Expose val newPassword: String
     ) : Serializable
 
-    fun changeAccountUsernameRequestHandler(ctx: Context) {
+    fun changeAccountPasswordRequestHandler(ctx: Context) {
         val payload: RequestPayload
         try {
             payload = ctx.bodyAsClass<RequestPayload>()
@@ -31,33 +27,20 @@ object ChangeAccountUsernameEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not change username of user account",
+                        "Could not change password of user account",
                         "Could not parse request body"
                     )
                 )
             return
         }
 
-        if (payload.newUsername.isBlank()) {
+        if (payload.newPassword.isBlank()) {
             ctx
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not change username of user account",
-                        "Username cannot be blank"
-                    )
-                )
-            return
-        }
-
-        val usernameErrors = UsernameValidator.validateUsername(payload.newUsername)
-        if (!usernameErrors.isEmpty()) {
-            ctx
-                .status(HttpStatus.BAD_REQUEST)
-                .json(
-                    ErrorPayload (
-                        "Could not change username of user account, errors:\n${Globals.gson.toJson(usernameErrors)}",
-                        "Usernames can only contain letters, digits, dashes and underscores"
+                        "Could not change password of user account",
+                        "Password cannot be blank"
                     )
                 )
             return
@@ -73,7 +56,7 @@ object ChangeAccountUsernameEndpoint {
                 .status(HttpStatus.NOT_FOUND)
                 .json(
                     ErrorPayload(
-                        "Could not change username of user account '${payload.userIdentifier}'",
+                        "Could not change password of user account '${payload.userIdentifier}'",
                         "No such user"
                     )
                 )
@@ -85,28 +68,14 @@ object ChangeAccountUsernameEndpoint {
                 .status(HttpStatus.UNAUTHORIZED)
                 .json(
                     ErrorPayload(
-                        "Could not change username of user account " +
-                                "'${account.getUsername()}' to '${payload.newUsername}'",
+                        "Could not change password of user account '${account.getUsername()}'",
                         "Invalid password"
                     )
                 )
             return
         }
 
-        try {
-            account.changeUsername(payload.newUsername)
-        } catch (_: UsernameOccupiedException) {
-            ctx
-                .status(HttpStatus.CONFLICT)
-                .json(
-                    ErrorPayload(
-                        "Could not change username of user account " +
-                                "'${account.getUsername()}' to '${payload.newUsername}'",
-                        "Username occupied"
-                    )
-                )
-            return
-        }
+        account.changePassword(payload.newPassword)
 
         ctx.status(HttpStatus.OK)
     }

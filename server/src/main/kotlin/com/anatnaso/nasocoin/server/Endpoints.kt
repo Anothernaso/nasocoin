@@ -7,6 +7,7 @@ import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountDisplayNameEn
 import com.anatnaso.nasocoin.server.endpoint.account.lifetime.CreateAccountEndpoint
 import com.anatnaso.nasocoin.server.endpoint.account.lifetime.DeleteAccountEndpoint
 import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountUserIdentifierEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountUsernameEndpoint
 import com.anatnaso.nasocoin.server.endpoint.wallet.GetAccountWalletsEndpoint
 import io.javalin.Javalin
 
@@ -20,6 +21,7 @@ fun Javalin.registerNasoCoinEndpoints(): Javalin {
     patch("/api/changeAccountPassword", ChangeAccountPasswordEndpoint::changeAccountPasswordRequestHandler)
 
     get("/api/getAccountDisplayName", GetAccountDisplayNameEndpoint::getAccountDisplayNameRequestHandler)
+    get("/api/getAccountUsername", GetAccountUsernameEndpoint::getAccountUsernameRequestHandler)
     get("/api/getAccountUserIdentifier", GetAccountUserIdentifierEndpoint::getAccountUserIdentifierRequestHandler)
 
     post("/api/getAccountWallets", GetAccountWalletsEndpoint::getAccountWalletsRequestHandler)

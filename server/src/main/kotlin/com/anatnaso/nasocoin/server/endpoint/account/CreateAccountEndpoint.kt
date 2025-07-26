@@ -66,17 +66,13 @@ object CreateAccountEndpoint {
             return
         }
 
-        val trimmedDisplayName = payload.displayName.trim()
-        val trimmedUsername = payload.username.trim()
-        val trimmedPassword = payload.password.trim()
-
-        val usernameErrors = UsernameValidator.validateUsername(trimmedUsername)
+        val usernameErrors = UsernameValidator.validateUsername(payload.username)
         if (!usernameErrors.isEmpty()) {
             ctx
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload (
-                        "Could not create user account '$trimmedUsername', errors:\n${Globals.gson.toJson(usernameErrors)}",
+                        "Could not create user account '${payload.username}', errors:\n${Globals.gson.toJson(usernameErrors)}",
                         "Usernames can only contain letters, digits, dashes and underscores"
                     )
                 )
@@ -88,16 +84,16 @@ object CreateAccountEndpoint {
         val account: UserAccountHandle
         try {
             account = db!!.registerAccount (
-                trimmedDisplayName,
-                trimmedUsername,
-                trimmedPassword
+                payload.displayName,
+                payload.username,
+                payload.password
             )
         } catch (_: UsernameOccupiedException) {
             ctx
                 .status(HttpStatus.CONFLICT)
                 .json(
                     ErrorPayload (
-                        "Could not create user account '$trimmedUsername'",
+                        "Could not create user account '${payload.username}'",
                         "Username occupied"
                     )
                 )

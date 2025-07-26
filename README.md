@@ -1,6 +1,6 @@
 # NasoCoin 💰 #
 
-* A digital currency *
+*A digital currency*
 
 ## How to build 🏗️🤔 ##
 #### Step 1: Install SDKMAN!, OpenJDK 24.0.2 and Gradle 8.14.3 ####

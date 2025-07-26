@@ -51,6 +51,8 @@ class UserAccountHandle (
                         "'${account.username}' to '$username': Username occupied"
             )
 
+        val oldUserIdentifier = account.userIdentifier
+
         synchronized(access) {
             access.accounts.remove(account.userIdentifier)
 
@@ -68,6 +70,10 @@ class UserAccountHandle (
         val wallets = access.walletsByOwnerIdentifier[account.userIdentifier]!!
         wallets.forEach { wallet ->
             wallet.ownerUserIdentifier = account.userIdentifier
+        }
+
+        if (oldUserIdentifier == access.rootUserIdentifier) {
+            access.rootUserIdentifier = account.userIdentifier
         }
     }
 

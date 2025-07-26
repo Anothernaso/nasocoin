@@ -24,7 +24,7 @@ class WalletHandle (
         )
 
         if (wallet.publicToken == access.rootWalletPublicToken) throw UnsupportedOperationException (
-            "Could not delete wallet '${wallet.publicToken}': Cannot delete root wallet"
+            "Could not delete wallet '${wallet.publicToken}' (pub): Cannot delete root wallet"
         )
 
         synchronized(access) {
@@ -45,13 +45,17 @@ class WalletHandle (
         isConsumed = true
     }
 
-    @Throws(HandleConsumedException::class, NoSuchUserException::class, Exception::class)
+    @Throws(HandleConsumedException::class, NoSuchUserException::class, UnsupportedOperationException::class, Exception::class)
     fun transferOwnershipByIdentifier(userIdentifier: String): WalletHandle {
         if (isConsumed) throw HandleConsumedException(
             "Could not transfer ownership of wallet '${wallet.publicToken}' (pub): Handle already consumed"
         )
 
-        val newOwner = access.accounts.get(userIdentifier)
+        if (wallet.publicToken == access.rootWalletPublicToken) throw UnsupportedOperationException (
+            "Could not transfer ownership of wallet '${wallet.publicToken}' (pub): Cannot transfer ownership of root wallet"
+        )
+
+        val newOwner = access.accounts[userIdentifier]
             ?: throw NoSuchUserException("Could not transfer ownership of wallet '${wallet.publicToken}' (pub): No such user '$userIdentifier'")
 
         val newOwnerWallets = access.walletsByOwnerIdentifier[newOwner.userIdentifier]

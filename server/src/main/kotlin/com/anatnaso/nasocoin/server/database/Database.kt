@@ -5,6 +5,8 @@ import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
 import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
 import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException
 import com.anatnaso.nasocoin.server.database.wallet.Wallet
+import com.anatnaso.nasocoin.server.database.wallet.WalletHandle
+import com.anatnaso.nasocoin.server.database.wallet.exception.NoSuchWalletException
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.Serializable
 import java.math.BigInteger
@@ -77,6 +79,40 @@ class Database : Serializable {
 
     fun accountExistsByUsername(username: String): Boolean {
         return accountExistsByIdentifier(DigestUtils.sha256Hex(username))
+    }
+
+    @Throws(NoSuchWalletException::class)
+    fun getWalletByPublicToken(publicToken: String): WalletHandle {
+        val wallet = access.walletsByPublicToken[publicToken]
+            ?: throw NoSuchWalletException("Could not get wallet '$publicToken' (pub): No such wallet")
+
+        val owner = access.accounts[wallet.ownerUserIdentifier]
+            ?: throw IllegalStateException(
+                "Could not get wallet '$publicToken' (pub): Invalid wallet owner user identifier"
+            )
+
+        return WalletHandle(wallet, owner, access)
+    }
+
+    @Throws(NoSuchWalletException::class)
+    fun getWalletByPrivateToken(privateToken: String): WalletHandle {
+        val wallet = access.walletsByPrivateToken[privateToken]
+            ?: throw NoSuchWalletException("Could not get wallet '$privateToken' (prv): No such wallet")
+
+        val owner = access.accounts[wallet.ownerUserIdentifier]
+            ?: throw IllegalStateException(
+                "Could not get wallet '$privateToken' (prv): Invalid wallet owner user identifier"
+            )
+
+        return WalletHandle(wallet, owner, access)
+    }
+
+    fun walletExistsByPublicToken(publicToken: String): Boolean {
+        return access.walletsByPublicToken.containsKey(publicToken)
+    }
+
+    fun walletExistsByPrivateToken(privateToken: String): Boolean {
+        return access.walletsByPrivateToken.containsKey(privateToken)
     }
 
     data class DatabaseDirectAccess (

@@ -10,6 +10,7 @@ import com.anatnaso.nasocoin.server.endpoint.get.GetAccountUserIdentifierEndpoin
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountUsernameEndpoint
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletsEndpoint
 import com.anatnaso.nasocoin.server.endpoint.lifetime.CreateAccountWalletEndpoint
+import com.anatnaso.nasocoin.server.endpoint.lifetime.DeleteAccountWallet
 import io.javalin.Javalin
 
 fun Javalin.registerNasoCoinEndpoints(): Javalin {
@@ -27,6 +28,7 @@ fun Javalin.registerNasoCoinEndpoints(): Javalin {
     post("/api/getAccountWallets", GetAccountWalletsEndpoint::getAccountWalletsRequestHandler)
 
     post("/api/createAccountWallet", CreateAccountWalletEndpoint::createAccountWalletRequestHandler)
+    delete("/api/deleteAccountWallet", DeleteAccountWallet::deleteAccountWalletRequestHandler)
 
     return this
 }

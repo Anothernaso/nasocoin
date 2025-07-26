@@ -14,7 +14,7 @@
 <small>Install Gradle 8.14.3</small>
 
 #### Step 2: Prepare the project ####
-``` git clone https://github.com/Anothernaso/nasocoin ```
+``` git clone https://github.com/Anothernaso/nasocoin.git ```
 <small>Clone the remote Git repository</small>
 
 ``` cd nasocoin ```

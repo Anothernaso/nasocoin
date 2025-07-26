@@ -1,10 +1,10 @@
 package com.anatnaso.nasocoin.server
 
-import com.anatnaso.nasocoin.server.endpoint.account.ChangeAccountDisplayNameEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.ChangeAccountUsernameEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.CreateAccountEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.DeleteAccountEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.GetAccountUserIdentifierEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.change.ChangeAccountDisplayNameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.change.ChangeAccountUsernameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.lifetime.CreateAccountEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.lifetime.DeleteAccountEndpoint
+import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountUserIdentifierEndpoint
 import com.anatnaso.nasocoin.server.endpoint.wallet.GetAccountWalletsEndpoint
 import io.javalin.Javalin
 

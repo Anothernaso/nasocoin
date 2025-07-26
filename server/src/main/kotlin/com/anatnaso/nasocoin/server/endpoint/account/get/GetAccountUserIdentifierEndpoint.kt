@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint.account
+package com.anatnaso.nasocoin.server.endpoint.account.get
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
@@ -17,7 +17,12 @@ object GetAccountUserIdentifierEndpoint {
         val username = ctx.queryParam("username")
         if (username == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
-                .json(ErrorPayload("Could not get user identifier of unknown user account", "Missing required query parameter 'username'"))
+                .json(
+                    ErrorPayload(
+                        "Could not get user identifier of unknown user account",
+                        "Missing required query parameter 'username'"
+                    )
+                )
             return
         }
 

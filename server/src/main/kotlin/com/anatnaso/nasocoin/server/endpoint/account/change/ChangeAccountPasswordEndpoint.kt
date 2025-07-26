@@ -4,6 +4,8 @@ import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
 import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
 import com.anatnaso.nasocoin.shared.http.ErrorPayload
+import com.anatnaso.nasocoin.shared.misc.Globals
+import com.anatnaso.nasocoin.shared.validator.PasswordValidator
 import com.google.gson.annotations.Expose
 import io.javalin.http.Context
 import io.javalin.http.HttpStatus
@@ -39,8 +41,21 @@ object ChangeAccountPasswordEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not change password of user account",
+                        "Could not change password of user account '${payload.userIdentifier}'",
                         "Password cannot be blank"
+                    )
+                )
+            return
+        }
+
+        val passwordErrors = PasswordValidator.validatePassword(payload.newPassword)
+        if (!passwordErrors.isEmpty()) {
+            ctx
+                .status(HttpStatus.BAD_REQUEST)
+                .json(
+                    ErrorPayload (
+                        "Could not change password of user account '${payload.userIdentifier}', errors:\n${Globals.gson.toJson(passwordErrors)}",
+                        "Passwords cannot contain spaces or ANSI escape codes/non-printable characters"
                     )
                 )
             return

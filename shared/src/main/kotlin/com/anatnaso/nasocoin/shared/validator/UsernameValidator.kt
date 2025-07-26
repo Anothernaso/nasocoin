@@ -1,8 +1,10 @@
-package com.anatnaso.nasocoin.shared.misc
+package com.anatnaso.nasocoin.shared.validator
+
+import java.io.Serializable
 
 object UsernameValidator {
 
-    enum class UsernameError {
+    enum class UsernameError : Serializable {
         ContainsSpaces,
         ContainsSpecialCharacters,
     }

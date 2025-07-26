@@ -4,7 +4,7 @@ import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
 import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException
 import com.anatnaso.nasocoin.shared.misc.Globals
 import com.anatnaso.nasocoin.shared.http.ErrorPayload
-import com.anatnaso.nasocoin.shared.misc.UsernameValidator
+import com.anatnaso.nasocoin.shared.validator.UsernameValidator
 import com.google.gson.annotations.Expose
 import io.javalin.http.Context
 import io.javalin.http.HttpStatus

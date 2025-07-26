@@ -40,7 +40,7 @@ object ChangeAccountDisplayNameEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload (
-                        "Could not change display name of user account",
+                        "Could not change display name of user account '${payload.userIdentifier}'",
                         "Display name cannot be blank"
                     )
                 )

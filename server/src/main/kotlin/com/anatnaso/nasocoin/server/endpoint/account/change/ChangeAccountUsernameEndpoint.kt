@@ -6,7 +6,7 @@ import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserExcepti
 import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException
 import com.anatnaso.nasocoin.shared.http.ErrorPayload
 import com.anatnaso.nasocoin.shared.misc.Globals
-import com.anatnaso.nasocoin.shared.misc.UsernameValidator
+import com.anatnaso.nasocoin.shared.validator.UsernameValidator
 import com.google.gson.annotations.Expose
 import io.javalin.http.Context
 import io.javalin.http.HttpStatus
@@ -43,7 +43,7 @@ object ChangeAccountUsernameEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not change username of user account",
+                        "Could not change username of user account '${payload.userIdentifier}'",
                         "Username cannot be blank"
                     )
                 )
@@ -56,7 +56,7 @@ object ChangeAccountUsernameEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload (
-                        "Could not change username of user account, errors:\n${Globals.gson.toJson(usernameErrors)}",
+                        "Could not change username of user account '${payload.userIdentifier}', errors:\n${Globals.gson.toJson(usernameErrors)}",
                         "Usernames can only contain letters, digits, dashes and underscores"
                     )
                 )

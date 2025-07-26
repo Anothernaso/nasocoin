@@ -11,23 +11,10 @@ import io.javalin.http.bodyAsClass
 import java.io.Serializable
 
 object GetAccountWalletsEndpoint {
-    private data class RequestPayload(@Expose val password: String) : Serializable
+    private data class RequestPayload(@Expose val userIdentifier: String, @Expose val password: String) : Serializable
     private data class ResponsePayload(@Expose val wallets: ArrayList<String>) : Serializable
 
     fun getAccountWalletsRequestHandler(ctx: Context) {
-
-        val userIdentifier = ctx.queryParam("userIdentifier")
-        if (userIdentifier == null) {
-            ctx.status(HttpStatus.BAD_REQUEST)
-                .json(
-                    ErrorPayload(
-                        "Could not get wallets of unknown user",
-                        "Missing required query parameter 'userIdentifier'"
-                    )
-                )
-            return
-        }
-
         val payload: RequestPayload
         try {
             payload = ctx.bodyAsClass<RequestPayload>()
@@ -36,23 +23,23 @@ object GetAccountWalletsEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not get wallets of user account $userIdentifier",
+                        "Could not get wallets of user account",
                         "Could not parse request body"
                     )
                 )
             return
         }
 
-        val db = DatabaseManager.database
+        val db = DatabaseManager.database!!
 
         val account: UserAccountHandle
         try {
-            account = db!!.getAccountById(userIdentifier)
+            account = db.getAccountById(payload.userIdentifier)
         } catch (_: NoSuchUserException) {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json (
-                    ErrorPayload("Could not get wallets of user account '$userIdentifier'", "No such user")
+                    ErrorPayload("Could not get wallets of user account '${payload.userIdentifier}'", "No such user")
                 )
             return
         }
@@ -61,7 +48,7 @@ object GetAccountWalletsEndpoint {
             ctx
                 .status(HttpStatus.UNAUTHORIZED)
                 .json(
-                    ErrorPayload("Could not get wallets of user account '${userIdentifier}'", "Invalid password")
+                    ErrorPayload("Could not get wallets of user account '${payload.userIdentifier}'", "Invalid password")
                 )
             return
         }

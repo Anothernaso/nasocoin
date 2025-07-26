@@ -77,5 +77,7 @@ object ChangeAccountDisplayNameEndpoint {
         }
 
         account.changeDisplayName(payload.newDisplayName)
+
+        ctx.status(HttpStatus.OK)
     }
 }

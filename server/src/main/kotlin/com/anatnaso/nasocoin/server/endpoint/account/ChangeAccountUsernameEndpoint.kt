@@ -92,5 +92,7 @@ object ChangeAccountUsernameEndpoint {
         }
 
         account.changeUsername(payload.newUsername)
+
+        ctx.status(HttpStatus.OK)
     }
 }

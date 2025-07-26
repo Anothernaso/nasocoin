@@ -63,5 +63,7 @@ object DeleteAccountEndpoint {
         }
 
         account.deleteAccount()
+
+        ctx.status(HttpStatus.OK)
     }
 }

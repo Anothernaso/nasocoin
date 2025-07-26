@@ -1,26 +1,25 @@
-package com.anatnaso.nasocoin.server.endpoint.account.change
+package com.anatnaso.nasocoin.server.endpoint.change
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
 import com.anatnaso.nasocoin.server.database.account.exception.NoSuchUserException
 import com.anatnaso.nasocoin.shared.http.ErrorPayload
-import com.anatnaso.nasocoin.shared.misc.Globals
-import com.anatnaso.nasocoin.shared.validator.PasswordValidator
 import com.google.gson.annotations.Expose
 import io.javalin.http.Context
 import io.javalin.http.HttpStatus
 import io.javalin.http.bodyAsClass
 import java.io.Serializable
+import java.lang.Exception
 
-object ChangeAccountPasswordEndpoint {
+object ChangeAccountDisplayNameEndpoint {
     private data class RequestPayload (
         @Expose val userIdentifier: String,
         @Expose val password: String,
 
-        @Expose val newPassword: String
+        @Expose val newDisplayName: String
     ) : Serializable
 
-    fun changeAccountPasswordRequestHandler(ctx: Context) {
+    fun changeAccountDisplayNameRequestHandle(ctx: Context) {
         val payload: RequestPayload
         try {
             payload = ctx.bodyAsClass<RequestPayload>()
@@ -29,33 +28,20 @@ object ChangeAccountPasswordEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not change password of user account",
+                        "Could not change display name of user account",
                         "Could not parse request body"
                     )
                 )
             return
         }
 
-        if (payload.newPassword.isBlank()) {
-            ctx
-                .status(HttpStatus.BAD_REQUEST)
-                .json(
-                    ErrorPayload(
-                        "Could not change password of user account '${payload.userIdentifier}'",
-                        "Password cannot be blank"
-                    )
-                )
-            return
-        }
-
-        val passwordErrors = PasswordValidator.validatePassword(payload.newPassword)
-        if (!passwordErrors.isEmpty()) {
+        if (payload.newDisplayName.isBlank()) {
             ctx
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload (
-                        "Could not change password of user account '${payload.userIdentifier}', errors:\n${Globals.gson.toJson(passwordErrors)}",
-                        "Passwords cannot contain spaces or ANSI escape codes/non-printable characters"
+                        "Could not change display name of user account '${payload.userIdentifier}'",
+                        "Display name cannot be blank"
                     )
                 )
             return
@@ -70,8 +56,8 @@ object ChangeAccountPasswordEndpoint {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json(
-                    ErrorPayload(
-                        "Could not change password of user account '${payload.userIdentifier}'",
+                    ErrorPayload (
+                        "Could not change display name of user account '${payload.userIdentifier}'",
                         "No such user"
                     )
                 )
@@ -82,15 +68,15 @@ object ChangeAccountPasswordEndpoint {
             ctx
                 .status(HttpStatus.UNAUTHORIZED)
                 .json(
-                    ErrorPayload(
-                        "Could not change password of user account '${account.getUsername()}'",
+                    ErrorPayload (
+                        "Could not change display name of user account '${account.getUsername()}'",
                         "Invalid password"
                     )
                 )
             return
         }
 
-        account.changePassword(payload.newPassword)
+        account.changeDisplayName(payload.newDisplayName)
 
         ctx.status(HttpStatus.OK)
     }

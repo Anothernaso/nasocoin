@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint.account.change
+package com.anatnaso.nasocoin.server.endpoint.lifetime
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
@@ -9,17 +9,18 @@ import io.javalin.http.Context
 import io.javalin.http.HttpStatus
 import io.javalin.http.bodyAsClass
 import java.io.Serializable
-import java.lang.Exception
 
-object ChangeAccountDisplayNameEndpoint {
+object CreateAccountWalletEndpoint {
     private data class RequestPayload (
         @Expose val userIdentifier: String,
         @Expose val password: String,
-
-        @Expose val newDisplayName: String
     ) : Serializable
 
-    fun changeAccountDisplayNameRequestHandle(ctx: Context) {
+    private data class ResponsePayload (
+        @Expose val walletPublicToken: String
+    ) : Serializable
+
+    fun createAccountWalletRequestHandler(ctx: Context) {
         val payload: RequestPayload
         try {
             payload = ctx.bodyAsClass<RequestPayload>()
@@ -28,20 +29,8 @@ object ChangeAccountDisplayNameEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not change display name of user account",
+                        "Could not create wallet for user account",
                         "Could not parse request body"
-                    )
-                )
-            return
-        }
-
-        if (payload.newDisplayName.isBlank()) {
-            ctx
-                .status(HttpStatus.BAD_REQUEST)
-                .json(
-                    ErrorPayload (
-                        "Could not change display name of user account '${payload.userIdentifier}'",
-                        "Display name cannot be blank"
                     )
                 )
             return
@@ -56,8 +45,8 @@ object ChangeAccountDisplayNameEndpoint {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json(
-                    ErrorPayload (
-                        "Could not change display name of user account '${payload.userIdentifier}'",
+                    ErrorPayload(
+                        "Could not create wallet for user account '${payload.userIdentifier}'",
                         "No such user"
                     )
                 )
@@ -68,16 +57,22 @@ object ChangeAccountDisplayNameEndpoint {
             ctx
                 .status(HttpStatus.UNAUTHORIZED)
                 .json(
-                    ErrorPayload (
-                        "Could not change display name of user account '${account.getUsername()}'",
+                    ErrorPayload(
+                        "Could not create wallet for user account '${account.getUsername()}'",
                         "Invalid password"
                     )
                 )
             return
         }
 
-        account.changeDisplayName(payload.newDisplayName)
+        val wallet = account.createWallet()
 
-        ctx.status(HttpStatus.OK)
+        ctx
+            .status(HttpStatus.OK)
+            .json(
+                ResponsePayload(
+                    wallet.getPublicToken()
+                )
+            )
     }
 }

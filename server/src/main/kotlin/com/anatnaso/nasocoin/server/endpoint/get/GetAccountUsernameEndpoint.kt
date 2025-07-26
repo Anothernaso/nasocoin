@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint.account.get
+package com.anatnaso.nasocoin.server.endpoint.get
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
@@ -9,16 +9,16 @@ import io.javalin.http.Context
 import io.javalin.http.HttpStatus
 import java.io.Serializable
 
-object GetAccountDisplayNameEndpoint {
-    private data class ResponsePayload(@Expose val displayName: String) : Serializable
+object GetAccountUsernameEndpoint {
+    private data class ResponsePayload(@Expose val username: String) : Serializable
 
-    fun getAccountDisplayNameRequestHandler(ctx: Context) {
+    fun getAccountUsernameRequestHandler(ctx: Context) {
         val userIdentifier = ctx.queryParam("userIdentifier")
         if (userIdentifier == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not get display name of user account",
+                        "Could not get username of user account",
                         "Missing required query parameter 'userIdentifier'"
                     )
                 )
@@ -35,7 +35,7 @@ object GetAccountDisplayNameEndpoint {
                 .status(HttpStatus.NOT_FOUND)
                 .json (
                     ErrorPayload(
-                        "Could not get display name of user account '${userIdentifier}'",
+                        "Could not get username of user account '${userIdentifier}'",
                         "No such user"
                     )
                 )
@@ -46,7 +46,7 @@ object GetAccountDisplayNameEndpoint {
             .status(HttpStatus.OK)
             .json(
                 ResponsePayload (
-                    account.getDisplayName()
+                    account.getUsername()
                 )
             )
     }

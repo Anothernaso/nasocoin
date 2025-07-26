@@ -1,14 +1,15 @@
 package com.anatnaso.nasocoin.server
 
-import com.anatnaso.nasocoin.server.endpoint.account.change.ChangeAccountDisplayNameEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.change.ChangeAccountPasswordEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.change.ChangeAccountUsernameEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountDisplayNameEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.lifetime.CreateAccountEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.lifetime.DeleteAccountEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountUserIdentifierEndpoint
-import com.anatnaso.nasocoin.server.endpoint.account.get.GetAccountUsernameEndpoint
-import com.anatnaso.nasocoin.server.endpoint.wallet.GetAccountWalletsEndpoint
+import com.anatnaso.nasocoin.server.endpoint.change.ChangeAccountDisplayNameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.change.ChangeAccountPasswordEndpoint
+import com.anatnaso.nasocoin.server.endpoint.change.ChangeAccountUsernameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.get.GetAccountDisplayNameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.lifetime.CreateAccountEndpoint
+import com.anatnaso.nasocoin.server.endpoint.lifetime.DeleteAccountEndpoint
+import com.anatnaso.nasocoin.server.endpoint.get.GetAccountUserIdentifierEndpoint
+import com.anatnaso.nasocoin.server.endpoint.get.GetAccountUsernameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletsEndpoint
+import com.anatnaso.nasocoin.server.endpoint.lifetime.CreateAccountWalletEndpoint
 import io.javalin.Javalin
 
 fun Javalin.registerNasoCoinEndpoints(): Javalin {
@@ -23,8 +24,9 @@ fun Javalin.registerNasoCoinEndpoints(): Javalin {
     get("/api/getAccountDisplayName", GetAccountDisplayNameEndpoint::getAccountDisplayNameRequestHandler)
     get("/api/getAccountUsername", GetAccountUsernameEndpoint::getAccountUsernameRequestHandler)
     get("/api/getAccountUserIdentifier", GetAccountUserIdentifierEndpoint::getAccountUserIdentifierRequestHandler)
-
     post("/api/getAccountWallets", GetAccountWalletsEndpoint::getAccountWalletsRequestHandler)
+
+    post("/api/createAccountWallet", CreateAccountWalletEndpoint::createAccountWalletRequestHandler)
 
     return this
 }

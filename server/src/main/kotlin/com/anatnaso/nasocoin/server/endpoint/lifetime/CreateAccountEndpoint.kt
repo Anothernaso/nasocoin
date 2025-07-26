@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint.account.lifetime
+package com.anatnaso.nasocoin.server.endpoint.lifetime
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
 import com.anatnaso.nasocoin.server.database.account.exception.UsernameOccupiedException

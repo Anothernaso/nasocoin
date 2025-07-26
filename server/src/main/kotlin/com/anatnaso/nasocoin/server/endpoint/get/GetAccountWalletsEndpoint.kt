@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint.wallet
+package com.anatnaso.nasocoin.server.endpoint.get
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle
@@ -19,7 +19,12 @@ object GetAccountWalletsEndpoint {
         val userIdentifier = ctx.queryParam("userIdentifier")
         if (userIdentifier == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
-                .json(ErrorPayload("Could not get wallets of unknown user", "Missing required query parameter 'userIdentifier'"))
+                .json(
+                    ErrorPayload(
+                        "Could not get wallets of unknown user",
+                        "Missing required query parameter 'userIdentifier'"
+                    )
+                )
             return
         }
 
@@ -30,7 +35,10 @@ object GetAccountWalletsEndpoint {
             ctx
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
-                    ErrorPayload("Could not get wallets of user account $userIdentifier", "Could not parse request body")
+                    ErrorPayload(
+                        "Could not get wallets of user account $userIdentifier",
+                        "Could not parse request body"
+                    )
                 )
             return
         }

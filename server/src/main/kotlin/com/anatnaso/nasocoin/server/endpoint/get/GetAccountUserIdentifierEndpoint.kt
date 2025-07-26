@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.server.endpoint.account.get
+package com.anatnaso.nasocoin.server.endpoint.get
 
 import com.anatnaso.nasocoin.server.database.DatabaseManager
 import com.anatnaso.nasocoin.server.database.account.UserAccountHandle

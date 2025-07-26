@@ -17,10 +17,14 @@ class WalletHandle (
 
     fun isConsumed(): Boolean = isConsumed
 
-    @Throws(HandleConsumedException::class)
+    @Throws(HandleConsumedException::class, UnsupportedOperationException::class)
     fun deleteWallet() {
         if (isConsumed) throw HandleConsumedException(
             "Could not delete wallet '${wallet.publicToken}' (pub): Handle already consumed"
+        )
+
+        if (wallet.publicToken == access.rootWalletPublicToken) throw UnsupportedOperationException (
+            "Could not delete wallet '${wallet.publicToken}': Cannot delete root wallet"
         )
 
         synchronized(access) {

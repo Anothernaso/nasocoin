@@ -16,10 +16,14 @@ class UserAccountHandle (
 
     fun isConsumed(): Boolean = isConsumed
 
-    @Throws(HandleConsumedException::class)
+    @Throws(HandleConsumedException::class, UnsupportedOperationException::class)
     fun deleteAccount() {
         if (isConsumed) throw HandleConsumedException (
             "Could not delete user account '${account.username}': Handle already consumed"
+        )
+
+        if (account.userIdentifier == access.rootUserIdentifier) throw UnsupportedOperationException (
+            "Could not delete user account '${account.username}': Cannot delete root user account"
         )
 
         synchronized(access) {

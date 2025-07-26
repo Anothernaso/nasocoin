@@ -9,18 +9,17 @@ import io.javalin.http.Context
 import io.javalin.http.HttpStatus
 import java.io.Serializable
 
-object GetAccountUserIdentifierEndpoint {
-    private data class ResponsePayload(@Expose val userIdentifier: String) : Serializable
+object GetAccountDisplayNameEndpoint {
+    private data class ResponsePayload(@Expose val displayName: String) : Serializable
 
-    fun getAccountUserIdentifierRequestHandler(ctx: Context) {
-
-        val username = ctx.queryParam("username")
-        if (username == null) {
+    fun getAccountDisplayNameRequestHandler(ctx: Context) {
+        val userIdentifier = ctx.queryParam("userIdentifier")
+        if (userIdentifier == null) {
             ctx.status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not get user identifier of user account",
-                        "Missing required query parameter 'username'"
+                        "Could not get display name of user account",
+                        "Missing required query parameter 'userIdentifier'"
                     )
                 )
             return
@@ -30,19 +29,25 @@ object GetAccountUserIdentifierEndpoint {
 
         val account: UserAccountHandle
         try {
-            account = db.getAccountByUsername(username)
+            account = db.getAccountById(userIdentifier)
         } catch (_: NoSuchUserException) {
             ctx
                 .status(HttpStatus.NOT_FOUND)
                 .json (
-                    ErrorPayload (
-                        "Could not get user identifier of user account '${username}'",
+                    ErrorPayload(
+                        "Could not get display name of user account '${userIdentifier}'",
                         "No such user"
                     )
                 )
             return
         }
 
-        ctx.status(HttpStatus.OK).json(ResponsePayload(account.getUserIdentifier()))
+        ctx
+            .status(HttpStatus.OK)
+            .json(
+                ResponsePayload (
+                    account.getDisplayName()
+                )
+            )
     }
 }

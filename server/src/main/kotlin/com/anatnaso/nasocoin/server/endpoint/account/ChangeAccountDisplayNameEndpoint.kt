@@ -11,13 +11,15 @@ import io.javalin.http.bodyAsClass
 import java.io.Serializable
 import java.lang.Exception
 
-object DeleteAccountEndpoint {
+object ChangeAccountDisplayNameEndpoint {
     private data class RequestPayload (
         @Expose val userIdentifier: String,
         @Expose val password: String,
+
+        @Expose val newDisplayName: String
     ) : Serializable
 
-    fun deleteAccountRequestHandler(ctx: Context) {
+    fun changeAccountDisplayNameRequestHandle(ctx: Context) {
         val payload: RequestPayload
         try {
             payload = ctx.bodyAsClass<RequestPayload>()
@@ -26,8 +28,20 @@ object DeleteAccountEndpoint {
                 .status(HttpStatus.BAD_REQUEST)
                 .json(
                     ErrorPayload(
-                        "Could not delete user account",
+                        "Could not change display name of user account",
                         "Could not parse request body"
+                    )
+                )
+            return
+        }
+
+        if (payload.newDisplayName.isBlank()) {
+            ctx
+                .status(HttpStatus.BAD_REQUEST)
+                .json(
+                    ErrorPayload (
+                        "Could not change display name of user account",
+                        "Display name cannot be blank"
                     )
                 )
             return
@@ -43,7 +57,7 @@ object DeleteAccountEndpoint {
                 .status(HttpStatus.NOT_FOUND)
                 .json(
                     ErrorPayload (
-                        "Could not delete user account '${payload.userIdentifier}'",
+                        "Could not change display name of user account '${payload.userIdentifier}'",
                         "No such user"
                     )
                 )
@@ -55,13 +69,13 @@ object DeleteAccountEndpoint {
                 .status(HttpStatus.UNAUTHORIZED)
                 .json(
                     ErrorPayload (
-                        "Could not delete user account '${account.getUsername()}'",
+                        "Could not change display name of user account '${account.getUsername()}'",
                         "Invalid password"
                     )
                 )
             return
         }
 
-        account.deleteAccount()
+        account.changeDisplayName(payload.newDisplayName)
     }
 }

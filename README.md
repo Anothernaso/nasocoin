@@ -10,8 +10,12 @@ A digital currency
 ``` sdk install java 24.0.2-open ```
 <small>Install OpenJDK 24.0.2</small>
 
-``` sdk install java 24.0.2-open ```
-<small>Install OpenJDK 24.0.2</small>
-
 ``` sdk install gradle 8.14.3 ```
 <small>Install Gradle 8.14.3</small>
+
+#### Step 2: Prepare the project ####
+``` git clone https://github.com/Anothernaso/nasocoin ```
+<small>Clone the remote Git repository</small>
+
+``` cd nasocoin ```
+<small>Enter the project directory</small>

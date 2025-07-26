@@ -15,7 +15,7 @@ object DatabaseDummy {
             val password = PasswordGenerator.generateRandomPassword()
 
             if (db!!.accountExistsByUsername(username)) return@forEach
-            db.registerAccount(displayName, username, password)
+            db.createAccount(displayName, username, password)
         }
     }
 }

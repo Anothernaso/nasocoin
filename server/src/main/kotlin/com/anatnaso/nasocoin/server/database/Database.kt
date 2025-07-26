@@ -19,7 +19,7 @@ class Database : Serializable {
     private val access: DatabaseDirectAccess = DatabaseDirectAccess()
 
     constructor(rootDisplayName: String, rootUsername: String, rootPassword: String, rootCapital: String) {
-        val rootAccount = registerAccount (
+        val rootAccount = createAccount (
                 rootDisplayName,
                 rootUsername,
                 rootPassword,
@@ -36,7 +36,7 @@ class Database : Serializable {
     }
 
     @Throws(UsernameOccupiedException::class)
-    fun registerAccount(displayName: String, username: String, password: String): UserAccountHandle {
+    fun createAccount(displayName: String, username: String, password: String): UserAccountHandle {
         val userIdentifier = DigestUtils.sha256Hex(username)
 
         if (access.accounts.containsKey(userIdentifier)) {

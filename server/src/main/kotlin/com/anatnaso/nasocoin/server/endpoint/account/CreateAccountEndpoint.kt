@@ -83,7 +83,7 @@ object CreateAccountEndpoint {
 
         val account: UserAccountHandle
         try {
-            account = db!!.registerAccount (
+            account = db!!.createAccount (
                 payload.displayName,
                 payload.username,
                 payload.password

@@ -1,27 +1,9 @@
 package com.anatnaso.nasocoin.client
 
-import com.anatnaso.nasocoin.shared.parser.CommandLineParser
+import com.anatnaso.nasocoin.shared.commandline.CommandLineShell
 
 fun main() {
-    val parser = CommandLineParser()
+    val parser = CommandLineShell()
         .registerNasoCoinClientCommands()
-
-    println("Type 'exit' to quit and type 'help' to see a list of commands.")
-    while (true) {
-        println()
-        print("> ")
-        val input = readLine()
-
-        if (input == null) {
-            println("End of input.")
-            break
-        }
-
-        if (input.lowercase() == "exit") {
-            println("Goodbye!")
-            break
-        }
-
-        parser.parse(input)
-    }
+        .run()
 }

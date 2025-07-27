@@ -1,6 +1,9 @@
-package com.anatnaso.nasocoin.shared.parser
+package com.anatnaso.nasocoin.shared.commandline
 
-class CommandLineParser {
+import com.anatnaso.nasocoin.shared.misc.AnsiConsoleUtils
+import org.fusesource.jansi.Ansi
+
+class CommandLineShell {
     private val commands = mutableListOf<Command>()
 
     class Command {
@@ -30,7 +33,7 @@ class CommandLineParser {
         }
     }
 
-    fun registerCommand(command: Command): CommandLineParser {
+    fun registerCommand(command: Command): CommandLineShell {
         commands.add(command)
 
         return this
@@ -38,7 +41,7 @@ class CommandLineParser {
 
     class Argument(val name: String, val description: String)
 
-    fun parse(input: String) {
+    private fun parse(input: String) {
         val tokens = input.trim().split(Regex("\\s+"))
         if (tokens.isEmpty()) return
 
@@ -54,13 +57,45 @@ class CommandLineParser {
         }
     }
 
-    fun printHelp() {
+    private fun printHelp() {
         println("Available commands:")
         for (cmd in commands) {
             println("- ${cmd.command}: ${cmd.description}")
             for (arg in cmd.arguments) {
                 println("    <${arg.name}>: ${arg.description}")
             }
+        }
+    }
+
+    fun run() {
+        var isRunning = true
+
+        registerCommand(Command(
+            "help",
+            "Shows this menu.",
+            arrayListOf(),
+        ) { _, _ ->
+            printHelp()
+        })
+        registerCommand(Command(
+            "exit",
+            "Exits the shell",
+            arrayListOf(),
+        ) { _, _ ->
+            isRunning = false
+        })
+        AnsiConsoleUtils.forceInstall()
+        print(Ansi.ansi().eraseScreen().cursor(0, 0))
+
+        println("Type 'exit' to quit and type 'help' to see a list of commands.")
+        while (isRunning) {
+            print("> ")
+            val input = readLine()
+
+            if (input == null) continue
+
+            parse(input)
+            println()
         }
     }
 }

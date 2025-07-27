@@ -1,15 +1,8 @@
 package com.anatnaso.nasocoin.client
 
-import com.anatnaso.nasocoin.shared.parser.CommandLineParser
+import com.anatnaso.nasocoin.shared.commandline.CommandLineShell
 
-fun CommandLineParser.registerNasoCoinClientCommands(): CommandLineParser {
-    registerCommand(CommandLineParser.Command(
-        "help",
-        "Shows this menu",
-        arrayListOf(),
-    ) { _, _ ->
-        printHelp()
-    })
+fun CommandLineShell.registerNasoCoinClientCommands(): CommandLineShell {
 
     return this
 }

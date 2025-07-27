@@ -1,5 +1,6 @@
 package com.anatnaso.nasocoin.server
 
+import com.anatnaso.nasocoin.server.endpoint.TransferAccountWalletFundsEndpoints
 import com.anatnaso.nasocoin.server.endpoint.change.ChangeAccountDisplayNameEndpoint
 import com.anatnaso.nasocoin.server.endpoint.change.ChangeAccountPasswordEndpoint
 import com.anatnaso.nasocoin.server.endpoint.change.ChangeAccountUsernameEndpoint
@@ -8,6 +9,7 @@ import com.anatnaso.nasocoin.server.endpoint.lifetime.CreateAccountEndpoint
 import com.anatnaso.nasocoin.server.endpoint.lifetime.DeleteAccountEndpoint
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountUserIdentifierEndpoint
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountUsernameEndpoint
+import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletFundsEndpoint
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletPrivateTokenEndpoint
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletPublicTokenEndpoint
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletsEndpoint
@@ -34,6 +36,8 @@ fun Javalin.registerNasoCoinEndpoints(): Javalin {
 
     post("/api/getAccountWalletPrivateToken", GetAccountWalletPrivateTokenEndpoint::getAccountWalletPrivateTokenRequestHandler)
     post("/api/getAccountWalletPublicToken", GetAccountWalletPublicTokenEndpoint::getAccountWalletPublicTokenRequestHandler)
+    post("/api/getAccountWalletFunds", GetAccountWalletFundsEndpoint::getAccountWalletFundsRequestHandler)
+    patch("/api/transferAccountWalletFunds", TransferAccountWalletFundsEndpoints::transferAccountWalletFundsRequestHandler)
 
     return this
 }

@@ -3,7 +3,7 @@ package com.anatnaso.nasocoin.shared.commandline
 import com.anatnaso.nasocoin.shared.misc.AnsiConsoleUtils
 import org.fusesource.jansi.Ansi
 
-class CommandLineShell {
+class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
     private val commands = mutableListOf<Command>()
 
     class Command {
@@ -89,7 +89,7 @@ class CommandLineShell {
 
         println("Type 'exit' to quit and type 'help' to see a list of commands.")
         while (isRunning) {
-            print("> ")
+            print(currentLinePrefix?.invoke() ?: "> ")
             val input = readLine()
 
             if (input == null) continue
@@ -97,5 +97,8 @@ class CommandLineShell {
             parse(input)
             println()
         }
+
+        AnsiConsoleUtils.forceInstall()
+        print(Ansi.ansi().eraseScreen().cursor(0, 0).reset())
     }
 }

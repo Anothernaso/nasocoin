@@ -22,6 +22,7 @@
 
 #### Step 3: Build the Java archives using Gradle ####
 ``` gradle buildAll ```
+<small>Build all the subprojects</small>
 
 You can now find the files at:
 ``` server/build/libs/ ```

@@ -28,4 +28,5 @@ You can now find the files at:
 and
 ``` client/build/libs/ ```
 ## How to run 🮲🮳🤔 ##
-
+After building the project, you can run it by typing:
+``` gradle :server:runShadow ```

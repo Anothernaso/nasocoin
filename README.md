@@ -27,3 +27,5 @@ You can now find the files at:
 ``` server/build/libs/ ```
 and
 ``` client/build/libs/ ```
+## How to run 🮲🮳🤔 ##
+

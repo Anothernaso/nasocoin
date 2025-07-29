@@ -28,6 +28,7 @@ class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
         constructor(command: String, description: String, arguments: ArrayList<Argument>, callback: (command: Command, args: Map<String, String>) -> Unit) {
             this.command = command
             this.description = description
+            @Suppress("UNCHECKED_CAST")
             this.arguments = arguments.clone() as ArrayList<Argument>
             this.callback = callback
         }

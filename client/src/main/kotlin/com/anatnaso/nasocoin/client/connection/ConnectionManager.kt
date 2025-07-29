@@ -27,10 +27,14 @@ object ConnectionManager {
 
 
     suspend fun connectToServer(serverAddress: String): Boolean {
-        if (client.head("https://$serverAddress${Endpoints.CONNECTION_TEST}").status == HttpStatusCode.OK) {
-            serverAddrezz = serverAddress
-            return true
-        } else {
+        try {
+            if (client.head("https://$serverAddress${Endpoints.CONNECTION_TEST}").status == HttpStatusCode.OK) {
+                serverAddrezz = serverAddress
+                return true
+            } else {
+                return false
+            }
+        } catch (_: Exception) {
             return false
         }
     }

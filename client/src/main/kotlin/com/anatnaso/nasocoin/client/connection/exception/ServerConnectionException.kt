@@ -1,6 +1,6 @@
-package com.anatnaso.nasocoin.server.database.account.exception
+package com.anatnaso.nasocoin.client.connection.exception
 
-class NoSuchUserException : Exception {
+class ServerConnectionException : Exception {
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

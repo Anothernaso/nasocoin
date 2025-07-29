@@ -1,5 +1,7 @@
 package com.anatnaso.nasocoin.client
 
+import com.anatnaso.nasocoin.client.commandline.CurrentLinePrefix
+import com.anatnaso.nasocoin.client.commandline.registerNasoCoinClientCommands
 import com.anatnaso.nasocoin.shared.commandline.CommandLineShell
 import com.anatnaso.nasocoin.shared.misc.AnsiConsoleUtils
 import org.fusesource.jansi.Ansi

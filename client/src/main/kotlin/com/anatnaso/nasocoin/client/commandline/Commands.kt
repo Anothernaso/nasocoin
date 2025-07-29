@@ -1,4 +1,4 @@
-package com.anatnaso.nasocoin.client
+package com.anatnaso.nasocoin.client.commandline
 
 import com.anatnaso.nasocoin.shared.commandline.CommandLineShell
 

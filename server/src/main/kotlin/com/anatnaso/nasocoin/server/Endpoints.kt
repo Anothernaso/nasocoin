@@ -15,9 +15,14 @@ import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletPublicTokenEndp
 import com.anatnaso.nasocoin.server.endpoint.get.GetAccountWalletsEndpoint
 import com.anatnaso.nasocoin.server.endpoint.lifetime.CreateAccountWalletEndpoint
 import com.anatnaso.nasocoin.server.endpoint.lifetime.DeleteAccountWallet
+import com.anatnaso.nasocoin.server.endpoint.misc.ConnectionTestEndpoint
+import com.anatnaso.nasocoin.server.endpoint.misc.LoginTestEndpoint
 import io.javalin.Javalin
 
 fun Javalin.registerNasoCoinEndpoints(): Javalin {
+
+    head("/api/connectionTest", ConnectionTestEndpoint::connectionTestRequestHandler)
+    post("/api/loginTest", LoginTestEndpoint::loginTestRequestHandler)
 
     post("/api/createAccount", CreateAccountEndpoint::createAccountRequestHandler)
     delete("/api/deleteAccount", DeleteAccountEndpoint::deleteAccountRequestHandler)

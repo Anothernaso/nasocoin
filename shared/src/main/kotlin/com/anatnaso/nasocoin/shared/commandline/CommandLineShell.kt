@@ -2,7 +2,9 @@ package com.anatnaso.nasocoin.shared.commandline
 
 import com.anatnaso.nasocoin.shared.misc.AnsiConsoleUtils
 import org.fusesource.jansi.Ansi
+import org.jline.reader.EndOfFileException
 import org.jline.reader.LineReaderBuilder
+import org.jline.reader.UserInterruptException
 import org.jline.terminal.TerminalBuilder
 
 class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
@@ -94,12 +96,19 @@ class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
 
         println("Type 'exit' to quit and type 'help' to see a list of commands.")
         while (isRunning) {
-            val input = reader.readLine(currentLinePrefix?.invoke() ?: "> ")
+            try {
+                val input = reader.readLine(currentLinePrefix?.invoke() ?: "> ")
 
-            if (input == null) continue
+                if (input == null) continue
 
-            parse(input)
-            println()
+                parse(input)
+                println()
+            } catch (_: UserInterruptException) {
+                println("^C")
+                isRunning = false
+            } catch (_: EndOfFileException) {
+                isRunning = false
+            }
         }
 
         AnsiConsoleUtils.forceInstall()

@@ -2,9 +2,13 @@ package com.anatnaso.nasocoin.shared.commandline
 
 import com.anatnaso.nasocoin.shared.misc.AnsiConsoleUtils
 import org.fusesource.jansi.Ansi
+import org.jline.reader.LineReaderBuilder
+import org.jline.terminal.TerminalBuilder
 
 class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
     private val commands = mutableListOf<Command>()
+    private val terminal = TerminalBuilder.builder().system(true).build()
+    private val reader = LineReaderBuilder.builder().terminal(terminal).build()
 
     class Command {
         val command: String
@@ -91,7 +95,7 @@ class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
         println("Type 'exit' to quit and type 'help' to see a list of commands.")
         while (isRunning) {
             print(currentLinePrefix?.invoke() ?: "> ")
-            val input = readLine()
+            val input = reader.readLine()
 
             if (input == null) continue
 

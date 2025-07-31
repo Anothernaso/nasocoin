@@ -94,8 +94,7 @@ class CommandLineShell(private val currentLinePrefix: (() -> String)? = null) {
 
         println("Type 'exit' to quit and type 'help' to see a list of commands.")
         while (isRunning) {
-            print(currentLinePrefix?.invoke() ?: "> ")
-            val input = reader.readLine()
+            val input = reader.readLine(currentLinePrefix?.invoke() ?: "> ")
 
             if (input == null) continue
 

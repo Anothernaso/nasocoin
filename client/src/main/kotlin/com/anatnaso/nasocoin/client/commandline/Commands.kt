@@ -59,6 +59,7 @@ fun CommandLineShell.registerNasoCoinClientCommands(): CommandLineShell {
                     .a("Could not disconnect from server: Not connected to any server")
                     .reset()
             )
+            return@Command
         }
 
         println(

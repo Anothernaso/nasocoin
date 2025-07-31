@@ -8,9 +8,12 @@ import org.fusesource.jansi.Ansi
 
 object CurrentLinePrefix {
     fun currentLinePrefix(): String {
-        val first: String = try {
+        val first: String = if (
+                ConnectionManager.isConnectionActive() && !ConnectionManager.isConnectionLost()
+            )
+        {
             ConnectionManager.serverAddress()
-        } catch (_: ServerConnectionException) {
+        } else {
             "Disconnected"
         }
 

@@ -4,7 +4,6 @@ import com.anatnaso.nasocoin.client.connection.ConnectionManager
 import com.anatnaso.nasocoin.client.connection.exception.ServerConnectionException
 import com.anatnaso.nasocoin.shared.commandline.CommandLineShell
 import com.anatnaso.nasocoin.shared.misc.AnsiConsoleUtils
-import kotlinx.coroutines.runBlocking
 import org.fusesource.jansi.Ansi
 
 fun CommandLineShell.registerNasoCoinClientCommands(): CommandLineShell {
@@ -21,9 +20,7 @@ fun CommandLineShell.registerNasoCoinClientCommands(): CommandLineShell {
         AnsiConsoleUtils.forceInstall()
 
         val inputAddress = args["serverAddress"]!!
-        runBlocking {
-            ConnectionManager.connectToServer(inputAddress)
-        }
+        ConnectionManager.connect(inputAddress)
 
         try {
             val serverAddress = ConnectionManager.serverAddress()

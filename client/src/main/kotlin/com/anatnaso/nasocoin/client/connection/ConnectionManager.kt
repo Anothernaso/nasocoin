@@ -2,52 +2,98 @@ package com.anatnaso.nasocoin.client.connection
 
 import com.anatnaso.nasocoin.client.connection.exception.ServerConnectionException
 import com.anatnaso.nasocoin.shared.http.Endpoints
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.head
-import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 
 object ConnectionManager {
-    val client = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-            })
-        }
-    }
 
-    private var serverAddrezz: String? = null
+    private var client: HttpClient? = null
+
+    private var isConnectionActive = false
+    private var isConnectionLost = false
+
+    private var serverAddress: String? = null
 
     @Throws(ServerConnectionException::class)
-    fun serverAddress(): String = serverAddrezz
-        ?: throw ServerConnectionException("Not connected to any server")
+    fun client() = client
+        ?: throw ServerConnectionException("Could not get client: Not connected to any server")
 
+    fun isConnectionActive() = isConnectionActive
+    fun isConnectionLost() = isConnectionLost
 
-    suspend fun connectToServer(serverAddress: String): Boolean {
-        val address = "http://$serverAddress${Endpoints.CONNECTION_TEST}"
-        println("Connecting to server '$address'")
+    @Throws(ServerConnectionException::class)
+    fun serverAddress() = serverAddress ?: throw ServerConnectionException("Could not get server address: Not connected to any server")
+
+    val scope = {
+        val scope = CoroutineScope(Dispatchers.Default)
+        scope.launch {
+            while (true) {
+                delay(1000)
+
+                if (!isConnectionActive) {
+                    continue
+                }
+
+                val url = "${ServerUrlUtils.getServerUrl(serverAddress!!)}${Endpoints.CONNECTION_TEST}"
+
+                try {
+                    client!!.head(url)
+                    isConnectionLost = false
+                } catch (_: Exception) {
+                    isConnectionLost = true
+                }
+            }
+        }
+
+        scope
+    }()
+
+    @Throws(ServerConnectionException::class)
+    fun connect(address: String) {
+        client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                })
+            }
+        }
+
+        val url = "${ServerUrlUtils.getServerUrl(address)}${Endpoints.CONNECTION_TEST}"
 
         try {
-            if (client.head(address).status == HttpStatusCode.OK) {
-                serverAddrezz = serverAddress
-                return true
-            } else {
-                return false
+            runBlocking {
+                client!!.head(url).status
             }
-        } catch (_: Exception) {
-            return false
+        } catch (e: Exception) {
+            client!!.close()
+            client = null
+
+            throw ServerConnectionException("Could not connect to server '$address'", e)
         }
+
+        isConnectionActive = true
+        isConnectionLost = false
+
+        serverAddress = address
     }
 
     @Throws(ServerConnectionException::class)
     fun disconnect() {
-        if (serverAddrezz == null) {
-            throw ServerConnectionException("Could not disconnect from server: Not connected to any server")
+        if (!isConnectionActive) {
+            throw ServerConnectionException("Could not disconnect from server: No connected to any server")
         }
 
-        serverAddrezz = null
+        client!!.close()
+        client = null
+
+        isConnectionActive = false
+        isConnectionLost = false
+
+        serverAddress = null
     }
 }

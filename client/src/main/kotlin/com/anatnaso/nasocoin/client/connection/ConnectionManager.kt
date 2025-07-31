@@ -27,8 +27,11 @@ object ConnectionManager {
 
 
     suspend fun connectToServer(serverAddress: String): Boolean {
+        val address = "http://$serverAddress${Endpoints.CONNECTION_TEST}"
+        println("Connecting to server '$address'")
+
         try {
-            if (client.head("https://$serverAddress${Endpoints.CONNECTION_TEST}").status == HttpStatusCode.OK) {
+            if (client.head(address).status == HttpStatusCode.OK) {
                 serverAddrezz = serverAddress
                 return true
             } else {
@@ -37,5 +40,14 @@ object ConnectionManager {
         } catch (_: Exception) {
             return false
         }
+    }
+
+    @Throws(ServerConnectionException::class)
+    fun disconnect() {
+        if (serverAddrezz == null) {
+            throw ServerConnectionException("Could not disconnect from server: Not connected to any server")
+        }
+
+        serverAddrezz = null
     }
 }
